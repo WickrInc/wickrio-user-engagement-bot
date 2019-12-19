@@ -1,7 +1,7 @@
 'use strict'
 
 //var factory = require('./factory.js');
-//var fileHandler = require('./file_handler.js');
+//var fileHandler = require('./file-handler.js');
 const logger = require('./logger');
 
 async function main() {

@@ -2,7 +2,7 @@
 const fs = require('fs');
 const WickrIOAPI = require('wickrio_addon');
 const state = require('../state');
-const FileHandler = require('../helpers/file_handler');
+const FileHandler = require('../helpers/file-handler');
 const logger = require('../logger');
 
 const fileHandler = new FileHandler();
