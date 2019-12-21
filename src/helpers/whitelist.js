@@ -1,14 +1,31 @@
 'use strict'
 
-const WickrIOAPI = require('wickrio_addon');
+// const WickrIOAPI = require('wickrio_addon');
 const fs = require('fs');
 const {exec, execSync, execFileSync} = require('child_process');
+//let whitelisted_users = 
 
 class WhitelistRepository {
   constructor(fs){
   }
 
   getWhitelist () {
+    var processes;
+    try {
+      processes = fs.readFileSync('./processes.json', 'utf-8');
+      if (!processes) {
+        console.error("Error reading processes.json!")
+        return;
+      }
+    } catch (err) {
+      console.error(err);
+      return;
+    }
+    var pjson = JSON.parse(processes);
+    //let whitelistedUsers =
+    return pjson.apps[0].env.tokens.WHITELISTED_USERS.value.split(',');
+    //return whitelistedUsers;
+/*
     var tokens = JSON.parse(process.env.tokens);
     let whitelisted_users;
 
@@ -24,6 +41,7 @@ class WhitelistRepository {
       whitelisted_users[i] = whitelisted_users[i].trim();
     }
     return whitelisted_users;
+    */
   }
 
   updateWhitelist (wlUsers) {
@@ -31,16 +49,16 @@ class WhitelistRepository {
     try {
       processes = fs.readFileSync('./processes.json', 'utf-8');
       if (!processes) {
-        console.log("Error reading processes.json!")
+        console.error("Error reading processes.json!")
         return;
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return;
     }
 
     var pjson = JSON.parse(processes);
-    console.log(pjson);
+    console.log(pjson.apps[0].env.tokens.WHITELISTED_USERS.value);
 
     //var wlUsers = getWhitelistedUsers().join(','); // whitelisted_users.join(',');
     var usersString = wlUsers.join(',');
@@ -52,13 +70,13 @@ class WhitelistRepository {
       pjson.apps[0].env.tokens.WHITELISTED_USERS.value = usersString;
     }
 
-    console.log("pjson", pjson);
+    console.log("pjson", pjson.apps[0].env.tokens.WHITELISTED_USERS.value);
 
     try {
       let cp = execSync('cp processes.json processes_backup.json');
       let ps = fs.writeFileSync('./processes.json', JSON.stringify(pjson, null, 2));
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 

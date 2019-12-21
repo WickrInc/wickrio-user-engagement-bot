@@ -11,7 +11,7 @@ var writer = require('./src/helpers/message-writer.js');
 var logger = require('./src/logger');
 var whitelisted_users, job;
 
-var fileHandler = require('./src/helpers/file_handler');
+var fileHandler = require('./src/helpers/file-handler');
 var broadcast = require('./src/commands/broadcast');
 var factory = require('./src/factory');
 var state = require('./src/state');

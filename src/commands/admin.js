@@ -55,7 +55,7 @@ class Admin {
       }
     }
     const addObj = {
-      reply,
+      reply: reply,
       state: state.NONE,
     };
     return addObj;
@@ -94,7 +94,7 @@ class Admin {
       }
     }
     const removeObj = {
-      reply,
+      reply: reply,
       state: state.NONE,
     };
     return removeObj;
