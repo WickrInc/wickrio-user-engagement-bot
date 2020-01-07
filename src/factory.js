@@ -5,6 +5,7 @@ const Admin = require('./commands/admin');
 const state = require('./state');
 const msgStatus = require('./commands/status');
 const logger = require('./logger');
+const chooseFile = require('./commands/choose-file');
 // TODO fix this!! get userEmail from somewhere
 const userEmail = 'torenwickr';
 

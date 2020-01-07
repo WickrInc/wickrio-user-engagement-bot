@@ -2,7 +2,8 @@
 const WickrIOAPI = require('wickrio_addon');
 const logger = require('./logger');
 const FileHandler = require('./helpers/file-handler');
-const messageIDHelper = require('./helpers/message-id-helper');
+// TODO proper form??
+const updateLastID = require('./helpers/message-id-helper');
 
 const fileHandler = new FileHandler();
 
@@ -56,6 +57,7 @@ class BroadcastService {
   uploadFile(file) {
   }
 
+  // TODO check if this works as expected
   isInt(value) {
     return !isNaN(value) && (function (x) { return (x | 0) === x; }(parseFloat(value)));
   }

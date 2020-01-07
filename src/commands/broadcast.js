@@ -6,11 +6,13 @@ const FileHandler = require('../helpers/file-handler');
 const logger = require('../logger');
 const BroadcastService = require('../broadcast-service');
 const InitializeBroadcast = require('./initialize-broadcast');
+const ChooseFile = require('./choose-file');
 const updateLastID = require('../helpers/message-id-helper');
 
 const fileHandler = new FileHandler();
 const broadcastService = new BroadcastService();
 const initializeBroadcast = new InitializeBroadcast();
+const chooseFile = new ChooseFile();
 
 // var dir = './files';
 if (!fs.existsSync(`${process.cwd()}/files`)) {
@@ -22,7 +24,8 @@ let messageToSend;
 // let fileArr;
 
 function startBroadcast (message) {
-  messageToSend = message;
+  // TODO look at this logic perhaps put this in the initBroadcast
+  broadcastService.setMessageToSend(message);
   return initializeBroadcast.execute();
   /*
   let reply = 'To which list would you like to send your message:\n';
@@ -41,6 +44,8 @@ function startBroadcast (message) {
 };
 
 const fileChosen = function (index) {
+  return chooseFile.execute(index);
+  /*
   let reply = null;
   let obj;
   let fileArr = broadcastService.getFileArr();
@@ -63,6 +68,7 @@ const fileChosen = function (index) {
     };
   }
   return obj;
+  */
 };
 
 const broadcast = function (fileName) {
@@ -74,9 +80,11 @@ const broadcast = function (fileName) {
   logger.debug('Broadcast uMessage', uMessage);
 };
 
+// TODO fix all this
 module.exports = {
   startBroadcast,
   fileChosen,
+  broadcast,
 };
 
 // TODO check this function

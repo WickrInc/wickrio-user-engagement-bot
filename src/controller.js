@@ -10,7 +10,6 @@ const chooseFile = new ChooseFile(broadcastService)
 const commands = [initializeBroadcast, chooseFile];
 
 
-
 for(let i = 0; i < commands.length; i++) {
   if(commands[i].shouldExecute(state)) {
     commands[i].execute(message, ...);
