@@ -2,10 +2,12 @@
 const WickrIOAPI = require('wickrio_addon');
 const logger = require('./logger');
 const FileHandler = require('./helpers/file-handler');
+const WriteMessageIDDB = require('./helpers/write-message-id-db');
 // TODO proper form??
 const updateLastID = require('./helpers/message-id-helper');
 
 const fileHandler = new FileHandler();
+const writeMessageIdDb = new WriteMessageIDDB();
 
 const dir = `${process.cwd()}/files/`;
 
@@ -46,12 +48,17 @@ class BroadcastService {
   }
 
   broadcastToFile(fileName) {
+    logger.debug('Broadcasting to a file');
+    var currentDate = new Date();
+    //"YYYY-MM-DDTHH:MM:SS.sssZ"
+    var jsonDateTime = currentDate.toJSON();
     // TODO move filePathcreation?
     const filePath = dir + fileName;
     const messageID = updateLastID();
     logger.debug('Heree is the filePath', filePath);
     const uMessage = WickrIOAPI.cmdSendMessageUserHashFile(filePath, messageToSend, '', '', messageID);
     logger.debug('Broadcast uMessage', uMessage);
+    writeMessageIdDb.writeMessageIDDB(messageID, 'torenwickr', filePath, jsonDateTime, messageToSend);
   }
 
   uploadFile(file) {

@@ -192,6 +192,7 @@ function readFileInput() {
   }
 }
 
+// TODO delete this
 function updateWhiteList()
 {
     var processes;

@@ -27,7 +27,7 @@ module.exports = {
       obj = broadcast.fileChosen(message);
     } else if (command === '/status') {
       obj = msgStatus.askStatus(userEmail);
-    } else if (state === state.WHICH_MESSAGE) {
+    } else if (currentState === state.WHICH_MESSAGE) {
       obj = msgStatus.messageChosen(message);
     } else if (command === '/admin') {
       const argList = arg.split(' ');
