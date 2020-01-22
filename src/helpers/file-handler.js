@@ -51,15 +51,18 @@ class FileHandler {
     return found;
   }
 
+  //TODO correct this
   copyFile(originalPath, newPath) {
     fs.copyFile(originalPath, newPath, (err) => {
       if (err) {
         // throw err;
         logger.error(err);
+        logger.error(err);
         return false;
+      } else {
+        logger.debug(`${originalPath} copied to ${newPath}`);
+        return true;
       }
-      logger.debug(`${originalPath} copied to ${newPath}`);
-      return true;
     });
   }
 }

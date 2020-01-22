@@ -52,10 +52,10 @@ module.exports = {
           state: state.NONE,
         };
       }
+      logger.debug('here is the obj', obj.reply, '\nand the state:\n', obj.state);
     } else {
       logger.debug('command', command);
     }
-    logger.debug('here is the obj', obj.reply, '\nand the state:\n', obj.state);
     return obj;
   },
 };

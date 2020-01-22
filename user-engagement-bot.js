@@ -11,12 +11,14 @@ var writer = require('./src/helpers/message-writer.js');
 var logger = require('./src/logger');
 var whitelisted_users, job;
 
-var fileHandler = require('./src/helpers/file-handler');
+var FileHandler = require('./src/helpers/file-handler');
 var broadcast = require('./src/commands/broadcast');
 var factory = require('./src/factory');
 var state = require('./src/state');
 var currentState;
 var help = require('./src/commands/help');
+
+const fileHandler = new FileHandler();
 
 process.stdin.resume(); //so the program will not close instantly
 if(!fs.existsSync(process.cwd() + "/attachments")) {
@@ -152,7 +154,8 @@ async function listen(message) {
     //How to deal with duplicate files??
     if(parsedMessage.file) { //&& JSON.stringify(message) !== JSON.stringify(prevMessage)) {
       console.log('Here is file info' + parsedMessage.file);
-      var cp = fileHandler.copyFile(parsedMessage.file.toString(), 'files/' + parsedMessage.filename.toString());
+      let cp = fileHandler.copyFile(parsedMessage.file.toString(), process.cwd() + '/files/' + parsedMessage.filename.toString());
+      console.log('Here is cp:', cp);
       if (cp) {
         var reply = "File named: " + parsedMessage.filename + " successfully saved to directory.";
         var sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
