@@ -3,6 +3,8 @@ const fs = require('fs');
 const util = require('util');
 const logger = require('../logger');
 
+const copyFileAsync = util.promisify(fs.copyFile);
+const readdirAsync = util.promisify(fs.readdir);
 // const readdir = util.promisify(fs.readdir);
 
 class FileHandler {
@@ -52,18 +54,29 @@ class FileHandler {
   }
 
   //TODO correct this
-  copyFile(originalPath, newPath) {
-    fs.copyFile(originalPath, newPath, (err) => {
-      if (err) {
-        // throw err;
-        logger.error(err);
-        logger.error(err);
-        return false;
-      } else {
+  async copyFile(originalPath, newPath) {
+    try {
+      await copyFileAsync(originalPath, newPath);
+      logger.debug(`${originalPath} copied to ${newPath}`);
+      return true;
+    } catch (err) {
+      logger.error(err);
+      return false;
+    }
+    /*
+    return new Promise((res, rej) => {
+      fs.copyFile(originalPath, newPath, (err) => {
+        if (err) {
+          // throw err;
+          logger.error(err);
+          console.log("error");
+          return res(false);
+        }
         logger.debug(`${originalPath} copied to ${newPath}`);
-        return true;
-      }
+        return res(true);
+      });
     });
+    */
   }
 }
 

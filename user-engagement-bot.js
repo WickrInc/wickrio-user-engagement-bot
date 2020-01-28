@@ -154,7 +154,7 @@ async function listen(message) {
     //How to deal with duplicate files??
     if(parsedMessage.file) { //&& JSON.stringify(message) !== JSON.stringify(prevMessage)) {
       console.log('Here is file info' + parsedMessage.file);
-      let cp = fileHandler.copyFile(parsedMessage.file.toString(), process.cwd() + '/files/' + parsedMessage.filename.toString());
+      let cp = await fileHandler.copyFile(parsedMessage.file.toString(), process.cwd() + '/files/' + parsedMessage.filename.toString());
       console.log('Here is cp:', cp);
       if (cp) {
         var reply = "File named: " + parsedMessage.filename + " successfully saved to directory.";
