@@ -53,7 +53,6 @@ class FileHandler {
     return found;
   }
 
-  //TODO correct this
   async copyFile(originalPath, newPath) {
     try {
       await copyFileAsync(originalPath, newPath);
@@ -63,20 +62,6 @@ class FileHandler {
       logger.error(err);
       return false;
     }
-    /*
-    return new Promise((res, rej) => {
-      fs.copyFile(originalPath, newPath, (err) => {
-        if (err) {
-          // throw err;
-          logger.error(err);
-          console.log("error");
-          return res(false);
-        }
-        logger.debug(`${originalPath} copied to ${newPath}`);
-        return res(true);
-      });
-    });
-    */
   }
 }
 
