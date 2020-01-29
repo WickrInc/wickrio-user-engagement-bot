@@ -1,6 +1,7 @@
 
 const WickrIOAPI = require('wickrio_addon');
 const state = require('../state');
+const logger = require('../logger');
 
 let currentMessageEntries;
 
@@ -8,6 +9,7 @@ function getMessageEntries(userEmail) {
   const messageIdEntries = [];
   const tableDataRaw = WickrIOAPI.cmdGetMessageIDTable('0', '1000');
   const tableData = JSON.parse(tableDataRaw);
+  logger.debug('Here is table data:', tableData);
   for (let i = tableData.length - 1; i > 0; i--) {
     const entry = tableData[i];
     console.log(`entry: ${entry}`);
@@ -52,7 +54,7 @@ const askStatus = function (userEmail) {
             + 'Which message would you like to see the status of?';
     obj = {
       reply,
-      state: state.WHICH_MESSAGGE,
+      state: state.WHICH_MESSAGE,
     };
   }
   return obj;
@@ -102,7 +104,6 @@ const getStatus = function (messageID, type, asyncStatus) {
   const statusString = '*Message Status:*\n'
                    + `Total Users: ${messageStatus.num2send}\n`
                    + `Messages Sent: ${messageStatus.sent}\n`
-                   + `Users Acknowledged: ${messageStatus.acked}\n`
                    + `Message pending to Users: ${messageStatus.pending}\n`
                    + `Message failed to send: ${messageStatus.failed}`;
   // console.log("here is the message status" + statusString);
