@@ -65,6 +65,8 @@ async function main() {
       });
     }
 
+    WickrIOAPI.cmdSetControl("cleardb", "true");
+
     if (tokens.WHITELISTED_USERS.encrypted) {
       whitelisted_users = WickrIOAPI.cmdDecryptString(tokens.WHITELISTED_USERS.value);
     } else {

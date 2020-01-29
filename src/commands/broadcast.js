@@ -25,6 +25,14 @@ let messageToSend;
 
 function startBroadcast (message) {
   // TODO look at this logic perhaps put this in the initBroadcast
+  if (!message) {
+    const reply = 'Must have a message to broadcast, Usage: /broadcast <message>';
+    const obj = {
+      reply,
+      state: state.NONE,
+    };
+    return obj;
+  }
   broadcastService.setMessageToSend(message);
   return initializeBroadcast.execute();
   /*
