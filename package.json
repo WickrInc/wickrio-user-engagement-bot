@@ -3,6 +3,8 @@
   "version": "5.44.2",
   "description": "WickrIO User Engagement Bot",
   "main": "user-engagement-bot.js",
+  "author": "Toren DeRosa",
+  "license": "ISC",
   "dependencies": {
     "log4js": "^5.3.0",
     "pino": "^5.15.0",
