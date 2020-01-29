@@ -101,7 +101,7 @@ async function listen(message) {
         command = command.toLowerCase().trim();
     } if (!command) {
       logger.debug("Command is empty!");
-      writer.writeFile(message);
+      // writer.writeFile(message);
     }
     var argument = parsedMessage.argument;
     var userEmail = parsedMessage.userEmail;
@@ -123,6 +123,7 @@ async function listen(message) {
       var reply = "Hey, this bot is just for announcements and can't respond to you personally. If you have a question, please get a hold of us a support@wickr.com or visit us a support.wickr.com. Thanks, Team Wickr";
       var sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
       logger.debug(sMessage);
+      writer.writeFile(message);
       return;
     }
 
