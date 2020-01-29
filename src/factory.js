@@ -2,6 +2,7 @@
 const broadcast = require('./commands/broadcast');
 const help = require('./commands/help');
 const Admin = require('./commands/admin');
+const FilesCommand = require('./commands/files-command');
 const state = require('./state');
 const msgStatus = require('./commands/status');
 const logger = require('./logger');
@@ -12,6 +13,7 @@ const userEmail = 'torenwickr';
 const WhitelistRepository = require('./helpers/whitelist');
 
 const admin = new Admin(new WhitelistRepository());
+const filesCommand = new FilesCommand();
 
 // TODO fix this!
 module.exports = {
@@ -21,6 +23,8 @@ module.exports = {
       // console.log('Before new promise');
       obj = help.help();
       // return Promise.resolve(help.help());
+    } else if (command === '/files') {
+      obj = filesCommand.execute();
     } else if (command === '/broadcast') {
       obj = broadcast.startBroadcast(arg);
     } else if (currentState === state.CHOOSE_FILE) {

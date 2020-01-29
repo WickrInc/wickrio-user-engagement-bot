@@ -132,6 +132,9 @@ async function listen(message) {
                             "\nWickrIO API: " + pkgjson.dependencies["wickrio-bot-api"] ;
       var sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
       return;
+    } else if (command === '/messages') {
+      var path = process.cwd() + "/attachments/messages.txt";
+      var uMessage = WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path);
     }
     
     var user = bot.getUser(userEmail); //Look up user by their wickr email

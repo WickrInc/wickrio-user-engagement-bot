@@ -50,11 +50,29 @@ process.on('uncaughtException', exitHandler.bind(null, {
 main();
 
 async function main() {
-  try {
-    var it = await inputTokens();
+  if (processConfigured()) {
+    try {
+      var cp = execSync('cp processes.json processes_backup.json');
+      if (dataParsed.apps[0].env.tokens.WICKRIO_BOT_NAME.value !== undefined) {
+        var newName = "WickrIO-User-Engagement-Bot_" + dataParsed.apps[0].env.tokens.WICKRIO_BOT_NAME.value;
+      } else {
+        var newName = "WickrIO-User-Engagement-Bot";
+      }
+      //var assign = Object.assign(dataParsed.apps[0].name, newName);
+      dataParsed.apps[0].name = newName;
+      var ps = fs.writeFileSync('./processes.json', JSON.stringify(dataParsed, null, 2));
+    } catch (err) {
+      console.log(err);
+    }
+    console.log("Already configured");
     process.exit();
-  } catch (err) {
-    console.log(err);
+  } else {
+    try {
+      var it = await inputTokens();
+      process.exit();
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
