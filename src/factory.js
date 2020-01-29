@@ -20,9 +20,13 @@ module.exports = {
   factory(currentState, command, arg, message) {
     let obj;
     if (command === '/help') {
-      // console.log('Before new promise');
       obj = help.help();
-      // return Promise.resolve(help.help());
+    } else if (command === '/cancel') {
+      const reply = 'Previous command canceled, send a new command or enter /help for a list of commands.';
+      obj = {
+        reply,
+        state: state.NONE,
+      };
     } else if (command === '/files') {
       obj = filesCommand.execute();
     } else if (command === '/broadcast') {
