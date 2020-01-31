@@ -6,7 +6,7 @@ node_modules
 
 last_id.json
 
-process.json
+processes.json
 processes_backup.json
 package-lock.json
 attachments
