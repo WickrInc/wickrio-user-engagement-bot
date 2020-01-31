@@ -6,9 +6,9 @@ var state = require('../state');
 
 const help = function() {
   var reply = "*Messages Commands*\n" +
-              "/broadcast <Message> : to send a broadcast message\n" +
-              "/messages get a text file of all the messages from all the rooms with recorder bot in them.\n\n" +
-              "/status : To get status of a broadcast message \n" +
+              "/broadcast <Message> : to send a broadcast message to a given file of user hashes or usernames\n" +
+              "/messages get a text file of all the messages sent to the user engagement bot\n" +
+              "/status : To get status of a broadcast message \n\n" +
               "*Admin Commands*\n" +
               "/admin list : Get list of admin users \n" +
               "/admin add <users> : Add one or more admin users \n" +
@@ -16,7 +16,8 @@ const help = function() {
               "*Other Commands*\n" +
               "/help : Show help information\n" +
               "/version : Get the version of the integration\n" +
-              "/cancel : To cancel the last operation and enter a new command\n";
+              "/cancel : To cancel the last operation and enter a new command\n" + 
+              "/files : To get a list of saved files that can be broadcast to";
   //var sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
   var obj = {
     reply: reply,
