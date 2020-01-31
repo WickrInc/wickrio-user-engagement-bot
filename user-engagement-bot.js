@@ -66,6 +66,8 @@ async function main() {
     }
 
     WickrIOAPI.cmdSetControl("cleardb", "true");
+    WickrIOAPI.cmdSetControl("contactbackup", "false");
+    WickrIOAPI.cmdSetControl("convobackup", "false");
 
     if (tokens.WHITELISTED_USERS.encrypted) {
       whitelisted_users = WickrIOAPI.cmdDecryptString(tokens.WHITELISTED_USERS.value);
@@ -173,7 +175,7 @@ async function listen(message) {
     } else {
       //TODO parse argument better??
       var obj = factory.factory(currentState, command, argument, parsedMessage.message);
-      console.log("Object reply", obj.reply);
+      console.log("Object reply:", obj.reply);
       if (obj.reply) {
         console.log("Object has a reply");
         var sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply);
