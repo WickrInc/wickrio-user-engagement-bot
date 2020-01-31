@@ -10,7 +10,7 @@ function getMessageEntries(userEmail) {
   const tableDataRaw = WickrIOAPI.cmdGetMessageIDTable('0', '1000');
   const tableData = JSON.parse(tableDataRaw);
   logger.debug('Here is table data:', tableData);
-  for (let i = tableData.length - 1; i > 0; i--) {
+  for (let i = tableData.length - 1; i >= 0; i--) {
     const entry = tableData[i];
     console.log(`entry: ${entry}`);
     // logger.debug("entry keys: " + Object.keys(entry));
@@ -50,8 +50,8 @@ const askStatus = function (userEmail) {
       messageString += `(${index++}) ${contentParsed.message}\n`;
     }
     reply = `Here are the past ${length} broadcast message(s):\n`
-            + `${messageString}`
-            + 'Which message would you like to see the status of?';
+          + `${messageString}`
+          + 'Which message would you like to see the status of?';
     obj = {
       reply,
       state: state.WHICH_MESSAGE,
