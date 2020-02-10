@@ -23,7 +23,7 @@ const dir = `${process.cwd()}/files/`;
 let messageToSend;
 // let fileArr;
 
-function startBroadcast (message) {
+function startBroadcast (message, userEmail) {
   // TODO look at this logic perhaps put this in the initBroadcast
   if (!message) {
     const reply = 'Must have a message to broadcast, Usage: /broadcast <message>';
@@ -34,6 +34,7 @@ function startBroadcast (message) {
     return obj;
   }
   broadcastService.setMessageToSend(message);
+  broadcastService.setUserEmail(userEmail);
   return initializeBroadcast.execute();
   /*
   let reply = 'To which list would you like to send your message:\n';

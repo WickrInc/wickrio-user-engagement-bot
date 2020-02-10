@@ -13,12 +13,13 @@ var whitelisted_users, job;
 
 var FileHandler = require('./src/helpers/file-handler');
 var broadcast = require('./src/commands/broadcast');
-var factory = require('./src/factory');
+const Factory = require('./src/factory');
 var state = require('./src/state');
 var currentState;
 var help = require('./src/commands/help');
 
 const fileHandler = new FileHandler();
+const factory = new Factory();
 
 process.stdin.resume(); //so the program will not close instantly
 if(!fs.existsSync(process.cwd() + "/attachments")) {
@@ -160,7 +161,7 @@ async function listen(message) {
    
     //TODO is this JSON.stringify necessary??
     //How to deal with duplicate files??
-    if(parsedMessage.file) { //&& JSON.stringify(message) !== JSON.stringify(prevMessage)) {
+    if (parsedMessage.file) { //&& JSON.stringify(message) !== JSON.stringify(prevMessage)) {
       console.log('Here is file info' + parsedMessage.file);
       let cp = await fileHandler.copyFile(parsedMessage.file.toString(), process.cwd() + '/files/' + parsedMessage.filename.toString());
       console.log('Here is cp:', cp);
@@ -174,7 +175,7 @@ async function listen(message) {
       //var prevMessage = message;
     } else {
       //TODO parse argument better??
-      var obj = factory.factory(currentState, command, argument, parsedMessage.message);
+      var obj = factory.factory(currentState, command, argument, parsedMessage.message, userEmail,parsedMessage.file);
       console.log("Object reply:", obj.reply);
       if (obj.reply) {
         console.log("Object has a reply");
@@ -219,10 +220,6 @@ function verifyUser(user) {
   } else {
     return true;
   }
-}
-
-function isInt(value) {
-  return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
 }
 
 main();
