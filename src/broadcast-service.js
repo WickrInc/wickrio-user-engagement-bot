@@ -55,7 +55,8 @@ class BroadcastService {
     // TODO move filePathcreation?
     const filePath = dir + fileName;
     const messageID = updateLastID();
-    logger.debug('Heree is the filePath', filePath);
+    logger.debug('Here is the filePath:', filePath);
+    logger.debug(filePath);
     const uMessage = WickrIOAPI.cmdSendMessageUserHashFile(filePath, messageToSend, '', '', messageID);
     logger.debug('Broadcast uMessage', uMessage);
     writeMessageIdDb.writeMessageIDDB(messageID, 'torenwickr', filePath, jsonDateTime, messageToSend);

@@ -24,8 +24,9 @@ class ChooseFile {
     } else {
       // logger.debug('here is the other fileArr', fileArr, '\n');
       // TODO matt distracted fix later
-      reply = 'message sent to a file';
+      reply = 'Message sent to users from the file: ';
       const fileName = fileArr[parseInt(index, 10) - 1];
+      reply += fileName;
       broadcastService.broadcastToFile(fileName);
       obj = {
         reply,

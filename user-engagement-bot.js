@@ -188,58 +188,6 @@ async function listen(message) {
   }
 }
 
-function readFileInput() {
-  try {
-    var rfs = fs.readFileSync('./processes.json', 'utf-8');
-    if (!rfs) {
-      console.log("Error reading processes.json!")
-      return rfs;
-    } else
-      return rfs.trim().split('\n');
-    }
-  catch (err) {
-    console.log(err);
-    process.exit();
-  }
-}
-
-// TODO delete this
-function updateWhiteList()
-{
-    var processes;
-    try {
-        processes = fs.readFileSync('./processes.json', 'utf-8');
-        if (!processes) {
-          console.log("Error reading processes.json!")
-          return;
-        }
-    }
-    catch (err) {
-        console.log(err);
-        return;
-    }
-
-    var pjson = JSON.parse(processes);
-    console.log(pjson);
-
-    var wlUsers = whitelisted_users.join(',');
-    if (pjson.apps[0].env.tokens.WHITELISTED_USERS.encrypted) {
-        var wlUsersEncrypted = WickrIOAPI.cmdEncryptString(wlUsers);
-        pjson.apps[0].env.tokens.WHITELISTED_USERS.value = wlUsersEncrypted;
-    } else {
-        pjson.apps[0].env.tokens.WHITELISTED_USERS.value = wlUsers;
-    }
-
-    console.log(pjson);
-
-    try {
-        var cp = execSync('cp processes.json processes_backup.json');
-        var ps = fs.writeFileSync('./processes.json', JSON.stringify(pjson, null, 2));
-    } catch (err) {
-        console.log(err);
-    }
-}
-
 function affirmativeReply(message){
   return message.toLowerCase() === 'yes' || message.toLowerCase() === 'y';
 }
