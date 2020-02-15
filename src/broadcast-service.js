@@ -14,6 +14,7 @@ const dir = `${process.cwd()}/files/`;
 let currentState;
 // TODO how does 'this' work in node??
 let messageToSend;
+let userEmail;
 let fileArr;
 
 class BroadcastService {
@@ -46,6 +47,10 @@ class BroadcastService {
   setMessageToSend(message) {
     messageToSend = message;
   }
+  
+  setUserEmail(email) {
+    userEmail = email;
+  }
 
   broadcastToFile(fileName) {
     logger.debug('Broadcasting to a file');
@@ -59,7 +64,7 @@ class BroadcastService {
     logger.debug(filePath);
     const uMessage = WickrIOAPI.cmdSendMessageUserHashFile(filePath, messageToSend, '', '', messageID);
     logger.debug('Broadcast uMessage', uMessage);
-    writeMessageIdDb.writeMessageIDDB(messageID, 'torenwickr', filePath, jsonDateTime, messageToSend);
+    writeMessageIdDb.writeMessageIDDB(messageID, userEmail, filePath, jsonDateTime, messageToSend);
   }
 
   uploadFile(file) {
