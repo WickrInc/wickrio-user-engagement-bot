@@ -3,8 +3,6 @@ const broadcast = require('./commands/broadcast');
 const help = require('./commands/help');
 const Admin = require('./commands/admin');
 const FilesCommand = require('./commands/files-command');
-const FileReceived = require('./commands/file-received.js');
-const FileType = require('./commands/file-type.js');
 const state = require('./state');
 const msgStatus = require('./commands/status');
 const logger = require('./logger');
@@ -13,19 +11,11 @@ const chooseFile = require('./commands/choose-file');
 const WhitelistRepository = require('./helpers/whitelist');
 
 const admin = new Admin(new WhitelistRepository());
-const filesCommand = new FilesCommand();
-const fileReceived = new FileReceived();
-const fileType = new FileType();
 
 // TODO fix this!
 class Factory {
   factory(currentState, command, arg, message, userEmail, parsedMessage, file) {
     let obj;
-    // if (file) {
-      // obj = fileReceived.execute();
-    // } else if (currentState === state.FILE_TYPE) {
-      // obj = await fileType.execute(message);
-    // } else 
     if (command === '/help') {
       obj = help.help();
     } else if (command === '/cancel') {
