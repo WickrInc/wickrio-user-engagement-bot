@@ -13,3 +13,4 @@ attachments
 users.txt
 files
 .eslintrc.js
+exclude-list.txt

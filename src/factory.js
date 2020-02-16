@@ -3,25 +3,33 @@ const broadcast = require('./commands/broadcast');
 const help = require('./commands/help');
 const Admin = require('./commands/admin');
 const FilesCommand = require('./commands/files-command');
+const FileReceived = require('./commands/file-received.js');
+const FileType = require('./commands/file-type.js');
 const state = require('./state');
 const msgStatus = require('./commands/status');
 const logger = require('./logger');
 const chooseFile = require('./commands/choose-file');
-// TODO fix this!! get userEmail from somewhere
-const userEmail = 'torenwickr';
 
 const WhitelistRepository = require('./helpers/whitelist');
 
 const admin = new Admin(new WhitelistRepository());
 const filesCommand = new FilesCommand();
+const fileReceived = new FileReceived();
+const fileType = new FileType();
 
 // TODO fix this!
-module.exports = {
-  factory(currentState, command, arg, message) {
+class Factory {
+  factory(currentState, command, arg, message, userEmail, parsedMessage, file) {
     let obj;
+    // if (file) {
+      // obj = fileReceived.execute();
+    // } else if (currentState === state.FILE_TYPE) {
+      // obj = await fileType.execute(message);
+    // } else 
     if (command === '/help') {
       obj = help.help();
     } else if (command === '/cancel') {
+      // TODO turn this into a file!
       const reply = 'Previous command canceled, send a new command or enter /help for a list of commands.';
       obj = {
         reply,
@@ -30,7 +38,7 @@ module.exports = {
     } else if (command === '/files') {
       obj = filesCommand.execute();
     } else if (command === '/broadcast') {
-      obj = broadcast.startBroadcast(arg);
+      obj = broadcast.startBroadcast(arg, userEmail);
     } else if (currentState === state.CHOOSE_FILE) {
       obj = broadcast.fileChosen(message);
     } else if (command === '/status') {
@@ -40,9 +48,6 @@ module.exports = {
     } else if (command === '/admin') {
       const argList = arg.split(' ');
       logger.debug(argList);
-      for (const argument of argList) {
-        logger.debug(argument);
-      }
       if (argList[0] === 'list') {
         obj = admin.list();
       } else if (argList[0] === 'add') {
@@ -65,5 +70,7 @@ module.exports = {
       logger.debug('command', command);
     }
     return obj;
-  },
-};
+  }
+}
+
+module.exports = Factory;

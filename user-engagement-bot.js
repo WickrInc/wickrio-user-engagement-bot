@@ -13,12 +13,13 @@ var whitelisted_users, job;
 
 var FileHandler = require('./src/helpers/file-handler');
 var broadcast = require('./src/commands/broadcast');
-var factory = require('./src/factory');
+const Factory = require('./src/factory');
 var state = require('./src/state');
 var currentState;
 var help = require('./src/commands/help');
 
 const fileHandler = new FileHandler();
+const factory = new Factory();
 
 process.stdin.resume(); //so the program will not close instantly
 if(!fs.existsSync(process.cwd() + "/attachments")) {
@@ -160,7 +161,7 @@ async function listen(message) {
    
     //TODO is this JSON.stringify necessary??
     //How to deal with duplicate files??
-    if(parsedMessage.file) { //&& JSON.stringify(message) !== JSON.stringify(prevMessage)) {
+    if (parsedMessage.file) { //&& JSON.stringify(message) !== JSON.stringify(prevMessage)) {
       console.log('Here is file info' + parsedMessage.file);
       let cp = await fileHandler.copyFile(parsedMessage.file.toString(), process.cwd() + '/files/' + parsedMessage.filename.toString());
       console.log('Here is cp:', cp);
@@ -174,7 +175,7 @@ async function listen(message) {
       //var prevMessage = message;
     } else {
       //TODO parse argument better??
-      var obj = factory.factory(currentState, command, argument, parsedMessage.message);
+      var obj = factory.factory(currentState, command, argument, parsedMessage.message, userEmail,parsedMessage.file);
       console.log("Object reply:", obj.reply);
       if (obj.reply) {
         console.log("Object has a reply");
@@ -186,58 +187,6 @@ async function listen(message) {
     console.error(err);
     console.log("Got an error");
   }
-}
-
-function readFileInput() {
-  try {
-    var rfs = fs.readFileSync('./processes.json', 'utf-8');
-    if (!rfs) {
-      console.log("Error reading processes.json!")
-      return rfs;
-    } else
-      return rfs.trim().split('\n');
-    }
-  catch (err) {
-    console.log(err);
-    process.exit();
-  }
-}
-
-// TODO delete this
-function updateWhiteList()
-{
-    var processes;
-    try {
-        processes = fs.readFileSync('./processes.json', 'utf-8');
-        if (!processes) {
-          console.log("Error reading processes.json!")
-          return;
-        }
-    }
-    catch (err) {
-        console.log(err);
-        return;
-    }
-
-    var pjson = JSON.parse(processes);
-    console.log(pjson);
-
-    var wlUsers = whitelisted_users.join(',');
-    if (pjson.apps[0].env.tokens.WHITELISTED_USERS.encrypted) {
-        var wlUsersEncrypted = WickrIOAPI.cmdEncryptString(wlUsers);
-        pjson.apps[0].env.tokens.WHITELISTED_USERS.value = wlUsersEncrypted;
-    } else {
-        pjson.apps[0].env.tokens.WHITELISTED_USERS.value = wlUsers;
-    }
-
-    console.log(pjson);
-
-    try {
-        var cp = execSync('cp processes.json processes_backup.json');
-        var ps = fs.writeFileSync('./processes.json', JSON.stringify(pjson, null, 2));
-    } catch (err) {
-        console.log(err);
-    }
 }
 
 function affirmativeReply(message){
@@ -271,10 +220,6 @@ function verifyUser(user) {
   } else {
     return true;
   }
-}
-
-function isInt(value) {
-  return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
 }
 
 main();

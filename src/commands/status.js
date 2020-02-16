@@ -10,9 +10,10 @@ function getMessageEntries(userEmail) {
   const tableDataRaw = WickrIOAPI.cmdGetMessageIDTable('0', '1000');
   const tableData = JSON.parse(tableDataRaw);
   logger.debug('Here is table data:', tableData);
+  logger.debug('And the useremail:', userEmail);
   for (let i = tableData.length - 1; i >= 0; i--) {
     const entry = tableData[i];
-    console.log(`entry: ${entry}`);
+    logger.debug(`entry: ${entry}`);
     // logger.debug("entry keys: " + Object.keys(entry));
     if (entry.sender === userEmail) {
       messageIdEntries.push(entry);

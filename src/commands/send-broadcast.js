@@ -14,7 +14,7 @@ class SendBroadcast {
     const messageToSend = broadcastService.messageToSend;
     const filePath = dir + fileName;
     const messageID = updateLastID();
-    logger.debug('Heree is the filePath', filePath);
+    logger.debug('Here is the filePath', filePath);
     const uMessage = WickrIOAPI.cmdSendMessageUserHashFile(filePath, messageToSend, '', '', messageID);
     logger.debug('Broadcast uMessage', uMessage);
   }
