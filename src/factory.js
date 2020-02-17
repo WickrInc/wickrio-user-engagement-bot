@@ -14,8 +14,6 @@ const WhitelistRepository = require('./helpers/whitelist');
 
 const admin = new Admin(new WhitelistRepository());
 const filesCommand = new FilesCommand();
-const fileReceived = new FileReceived();
-const fileType = new FileType();
 
 // TODO fix this!
 class Factory {
