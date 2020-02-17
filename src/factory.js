@@ -11,6 +11,7 @@ const chooseFile = require('./commands/choose-file');
 const WhitelistRepository = require('./helpers/whitelist');
 
 const admin = new Admin(new WhitelistRepository());
+const filesCommand = new FilesCommand();
 
 // TODO fix this!
 class Factory {
