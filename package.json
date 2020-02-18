@@ -1,6 +1,6 @@
 {
   "name": "wickrio-user-engagement-bot",
-  "version": "5.47.6",
+  "version": "5.47.7",
   "description": "WickrIO User Engagement Bot",
   "main": "user-engagement-bot.js",
   "author": "Toren DeRosa",
