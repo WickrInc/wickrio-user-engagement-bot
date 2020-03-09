@@ -1,16 +1,22 @@
 
 const WickrIOAPI = require('wickrio_addon');
-//const whitelist = require('../helpers/whitelist.js');
+// const whitelist = require('../helpers/whitelist.js');
 const state = require('../state');
+const logger = require('../logger');
+
+// let whitelist;
 
 class Admin {
   constructor(whitelistRepository) {
     this.whitelist = whitelistRepository;
   }
 
-  list () {
+  list() {
+    logger.debug('admin list');
     const whitelisted_users = this.whitelist.getWhitelist();
+    logger.debug(`wl_users${whitelisted_users}`);
     const userList = whitelisted_users.join('\n');
+    logger.debug(`userList${userList}`);
     const reply = `Current admins:\n${userList}`;
 
     const listObj = {
@@ -20,7 +26,7 @@ class Admin {
     return listObj;
   }
 
-  add (userEmail, users) {
+  add(userEmail, users) {
     let reply;
     const whitelisted_users = this.whitelist.getWhitelist();
     const addFails = [];
@@ -55,13 +61,13 @@ class Admin {
       }
     }
     const addObj = {
-      reply: reply,
+      reply,
       state: state.NONE,
     };
     return addObj;
   }
 
-  remove (userEmail, users) {
+  remove(userEmail, users) {
     const removeFails = [];
     const whitelisted_users = this.whitelist.getWhitelist();
     let reply;
@@ -77,7 +83,7 @@ class Admin {
       if (removeFails.length >= 1) {
         reply = 'Failed to remove some users current list of admins does not contain\n';
         reply += removeFails.join('\n');
-        // var umessage = wickrioapi.cmdsendroommessage(vgroupid, reply);
+        // const umessage = WickrIOAPI.cmdsendroommessage(vgroupid, reply);
       }
 
       if (users.length >= 1) {
@@ -94,7 +100,7 @@ class Admin {
       }
     }
     const removeObj = {
-      reply: reply,
+      reply,
       state: state.NONE,
     };
     return removeObj;

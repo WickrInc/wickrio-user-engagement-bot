@@ -8,14 +8,17 @@ const msgStatus = require('./commands/status');
 const logger = require('./logger');
 const chooseFile = require('./commands/choose-file');
 
-const WhitelistRepository = require('./helpers/whitelist');
+// let admin;
 
-const admin = new Admin(new WhitelistRepository());
 const filesCommand = new FilesCommand();
 
 // TODO fix this!
 class Factory {
-  factory(currentState, command, arg, message, userEmail, parsedMessage, file) {
+  constructor(whitelist) {
+    this.admin = new Admin(whitelist);
+  }
+
+  execute(currentState, command, arg, message, userEmail, parsedMessage, file) {
     let obj;
     if (command === '/help') {
       obj = help.help();
@@ -40,15 +43,16 @@ class Factory {
       const argList = arg.split(' ');
       logger.debug(argList);
       if (argList[0] === 'list') {
-        obj = admin.list();
+        logger.debug('arglist = list');
+        obj = this.admin.list();
       } else if (argList[0] === 'add') {
-        // TODO start here!
         argList.shift();
         logger.debug('arglist shifted', argList);
-        obj = admin.add(userEmail, argList);
+        obj = this.admin.add(userEmail, argList);
       } else if (argList[0] === 'remove') {
         argList.shift();
-        obj = admin.remove(userEmail, argList);
+        // TODO return obj is undefined
+        obj = this.admin.remove(userEmail, argList);
       } else {
         const reply = 'Invalid /admin command, usage:\n/admin list|add <user(s)>|remove <user(s)>';
         obj = {

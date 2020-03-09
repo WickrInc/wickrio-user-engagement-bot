@@ -8,8 +8,8 @@ const WickrUser = WickrIOBotAPI.WickrUser;
 const bot = new WickrIOBotAPI.WickrIOBot();
 const pkgjson = require('./package.json');
 var writer = require('./src/helpers/message-writer.js');
-var logger = require('./src/logger');
-var whitelisted_users, job;
+const logger = require('./src/logger');
+const WhitelistRepository = require('./src/helpers/whitelist');
 
 var FileHandler = require('./src/helpers/file-handler');
 var broadcast = require('./src/commands/broadcast');
@@ -19,7 +19,8 @@ var currentState;
 var help = require('./src/commands/help');
 
 const fileHandler = new FileHandler();
-const factory = new Factory();
+const whitelist = new WhitelistRepository(fs);
+const factory = new Factory(whitelist);
 
 process.stdin.resume(); //so the program will not close instantly
 if(!fs.existsSync(process.cwd() + "/attachments")) {
@@ -69,18 +70,6 @@ async function main() {
     WickrIOAPI.cmdSetControl("cleardb", "true");
     WickrIOAPI.cmdSetControl("contactbackup", "false");
     WickrIOAPI.cmdSetControl("convobackup", "false");
-
-    if (tokens.WHITELISTED_USERS.encrypted) {
-      whitelisted_users = WickrIOAPI.cmdDecryptString(tokens.WHITELISTED_USERS.value);
-    } else {
-      whitelisted_users = tokens.WHITELISTED_USERS.value;
-    }
-    whitelisted_users = whitelisted_users.split(',');
-
-    // Make sure there are no white spaces on the whitelisted users
-    for(var i = 0; i < whitelisted_users.length; i++){
-      whitelisted_users[i] = whitelisted_users[i].trim();
-    }
 
     bot.startListening(listen); //Passes a callback function that will receive incoming messages into the bot client
     //await bot.startListening(listen); //Passes a callback function that will receive incoming messages into the bot client
@@ -175,7 +164,7 @@ async function listen(message) {
       //var prevMessage = message;
     } else {
       //TODO parse argument better??
-      var obj = factory.factory(currentState, command, argument, parsedMessage.message, userEmail,parsedMessage.file);
+      var obj = factory.execute(currentState, command, argument, parsedMessage.message, userEmail,parsedMessage.file);
       console.log("Object reply:", obj.reply);
       if (obj.reply) {
         console.log("Object has a reply");
@@ -214,7 +203,10 @@ function replyWithButtons(message) {
 }
 
 function verifyUser(user) {
-  var found = whitelisted_users.indexOf(user);
+  logger.debug('verifying user');
+  const whitelistedUsers = whitelist.getWhitelist();
+  logger.debug('whitelist:' + whitelistedUsers.toString() + ';');
+  const found = whitelistedUsers.indexOf(user);
   if (found === -1) {
     return false;
   } else {
