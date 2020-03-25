@@ -1,30 +1,27 @@
-// TODO delete this file!
+
 const WickrIOAPI = require('wickrio_addon');
 const updateLastID = require('../helpers/message-id-helper');
 const BroadcastService = require('../broadcast-service');
 const logger = require('../logger');
 const state = require('../state');
+const fileType = require('../file-type');
 
 const broadcastService = new BroadcastService();
 const dir = `${process.cwd()}/files/`;
 
-class SendBroadcast {
-  broadcast(fileName) {
+class SendFile {
+  shouldExecute() {}
+
+  execute(fileName, fileToSend, fileType) {
     // TODO move filePathcreation?
-    const { messageToSend } = broadcastService;
+    const messageToSend = broadcastService.messageToSend;
     const filePath = dir + fileName;
     const messageID = updateLastID();
     logger.debug('Here is the filePath', filePath);
-    // TODO fix this so that it sends to either hash or user file
-    const uMessage = WickrIOAPI.cmdSendMessageUserHashFile(
-      filePath,
-      messageToSend,
-      '',
-      '',
-      messageID,
-    );
+    // var send = WickrIOAPI.cmdSendNetworkAttachment(user.filename, displayName, "", "", messageID, sentby);
+    const uMessage = WickrIOAPI.cmdSendAttachmentUserHashFile(filePath, fileToSend, displayName, '', '', messageID, '');
     logger.debug('Broadcast uMessage', uMessage);
   }
 }
 
-module.exports = SendBroadcast;
+module.exports = SendFile;
