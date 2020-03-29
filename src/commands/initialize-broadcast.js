@@ -6,7 +6,7 @@ class InitializeBroadcast {
     this.broadcastService = broadcastService;
   }
 
-  shouldExecute() {
+  static shouldExecute(command, state) {
 
   }
 
@@ -23,7 +23,7 @@ class InitializeBroadcast {
     }
     if (length > 0) {
       reply = 'To which list would you like to send your message:\n';
-      for (let index = 0; index < length; index++) {
+      for (let index = 0; index < length; index += 1) {
         reply += `(${index + 1}) ${fileArr[index]}\n`;
       }
       const obj = {

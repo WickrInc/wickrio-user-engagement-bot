@@ -195,7 +195,7 @@ async function listen(message) {
       // TODO parse argument better??
       let obj;
       if (parsedMessage.file) {
-        obj = factory.fileReceived(parsedMessage.file, parsedMessage.filename);
+        obj = factory.file(parsedMessage.file, parsedMessage.filename);
         file = parsedMessage.file;
         filename = parsedMessage.filename;
       } else {

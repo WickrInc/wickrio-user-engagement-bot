@@ -1,14 +1,14 @@
 
 const logger = require('../logger');
 const state = require('../state');
-
+const BroadcastService = require('../broadcast-service');
 
 class ChooseFile {
   constructor(broadcastService) {
     this.broadcastService = broadcastService;
   }
 
-  shouldExecute() {
+  static shouldExecute() {
   }
 
   execute(index) {
@@ -16,7 +16,7 @@ class ChooseFile {
     let obj;
     const fileArr = this.broadcastService.getFileArr();
     const length = Math.min(fileArr.length, 5);
-    if (!this.isInt(index) || index < 1 || index > length) {
+    if (!BroadcastService.isInt(index) || index < 1 || index > length) {
       reply = `Index: ${index} is out of range. Please enter a number between 1 and ${length}`;
       obj = {
         reply,
@@ -24,11 +24,11 @@ class ChooseFile {
       };
     } else {
       // logger.debug('here is the other fileArr', fileArr, '\n');
-      // TODO matt distracted fix later
-      // TODO don't know what this means but check for errors first!! return from send
+      // TODO check for errors first!! return from send
       reply = 'Message sent to users from the file: ';
       const fileName = fileArr[parseInt(index, 10) - 1];
       reply += fileName;
+      // TODO should I set the fileName as a variable of broadcastService??
       this.broadcastService.broadcastToFile(fileName);
       obj = {
         reply,
@@ -36,10 +36,6 @@ class ChooseFile {
       };
     }
     return obj;
-  }
-
-  isInt(value) {
-    return !isNaN(value) && (function (x) { return (x | 0) === x; }(parseFloat(value)));
   }
 }
 
