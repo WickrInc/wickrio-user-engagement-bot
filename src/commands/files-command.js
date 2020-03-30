@@ -1,20 +1,19 @@
-'use strict'
-
-const BroadcastService = require('../broadcast-service');
 const logger = require('../logger');
 const state = require('../state');
 
-const broadcastService = new BroadcastService();
-
-//TODO add a delete file command??
+// TODO add a delete file command??
 class FileCommand {
+  constructor(broadcastService) {
+    this.broadcastService = broadcastService;
+  }
+
   shouldExecute() {
 
   }
 
   execute() {
     let reply = 'Here is a list of the files to which you can send a message:\n';
-    const fileArr = broadcastService.getFiles();
+    const fileArr = this.broadcastService.getFiles();
     // logger.debug('Here is the fileArr: ', fileArr, '\nAnd the messageToSend:', messageToSend);
     const length = Math.min(fileArr.length, 5);
     for (let index = 0; index < length; index++) {
@@ -26,7 +25,6 @@ class FileCommand {
     };
     return obj;
   }
-
 }
 
 module.exports = FileCommand;
