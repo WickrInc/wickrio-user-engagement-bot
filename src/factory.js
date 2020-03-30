@@ -28,7 +28,6 @@ class Factory {
     let obj;
     // if (!file.trim()) {
     //   this.file = file;
-    // }
     if (command === '/help') {
       obj = help.help();
     } else if (command === '/cancel') {
