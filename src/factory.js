@@ -1,5 +1,5 @@
 const broadcast = require('./commands/broadcast');
-const help = require('./commands/help');
+const Help = require('./commands/help');
 const Admin = require('./commands/admin');
 const FilesCommand = require('./commands/files-command');
 const FileReceived = require('./commands/file-received');
@@ -9,10 +9,20 @@ const msgStatus = require('./commands/status');
 const logger = require('./logger');
 const ChooseFile = require('./commands/choose-file');
 const Cancel = require('./commands/cancel');
+
 const sendFile = require('./commands/send-file');
 const BroadcastService = require('./broadcast-service');
 
-const filesCommand = new FilesCommand();
+const commandList = [
+  Help,
+  Cancel,
+  this.filesCommand,
+  this.initializeBroadcast,
+  this.chooseFile,
+  this.askStatus,
+  this.messageChosen,
+];
+
 // TODO how can we use a new Broadcast service each time???
 class Factory {
   constructor(whitelist) {
@@ -21,20 +31,30 @@ class Factory {
     this.initializeBroadcast = new InitializeBroadcast(this.broadcastService);
     this.chooseFile = new ChooseFile(this.broadcastService);
     this.fileReceived = new FileReceived(this.broadcastService);
+    this.filesCommand = new FilesCommand(this.broadcastService);
+  }
+
+  execute(currentState, command, arg, message, userEmail) {
+    let obj;
+    for (command of commandList) {
+      if (command.shouldExecute(command, currentState, arg) {
+        obj = command.execute(message, arg, userEmail);
+      }
+    }
+    return obj;
   }
 
   execute(currentState, command, arg, message, userEmail) {
     let obj;
     if (command === '/help') {
-      obj = help.help();
-    } else if (command === '/cancel') {
+      obj = Help.execute();
+    } else if (Cancel.shouldExecute(command)) {
       obj = Cancel.execute();
     } else if (command === '/files') {
-      obj = filesCommand.execute(arg);
+      obj = this.filesCommand.execute();
     } else if (command === '/broadcast') {
       obj = this.initializeBroadcast.execute(arg, userEmail);
     } else if (currentState === state.CHOOSE_FILE) {
-      // obj = broadcast.fileChosen(message);
       obj = this.chooseFile.execute(message);
     } else if (command === '/status') {
       obj = msgStatus.askStatus(userEmail);
@@ -68,7 +88,6 @@ class Factory {
     return obj;
   }
 
-  // this.fileReceived(currentState, command, arg, message, userEmail, parsedMessage, file) {
   file(file, displayName) {
     this.broadcastService.setFileToSend(file);
     this.broadcastService.setDisplayName(displayName);

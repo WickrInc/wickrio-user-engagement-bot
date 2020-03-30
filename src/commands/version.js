@@ -1,4 +1,5 @@
 const state = require('../state');
+const pkgjson = require('../../package.json');
 
 class Version {
   static shouldExecute(command, state, message) {
@@ -9,11 +10,10 @@ class Version {
     const reply = `*Versions*\nIntegration: ${pkgjson.version
     }\nWickrIO Addon: ${pkgjson.dependencies.wickrio_addon
     }\nWickrIO API: ${pkgjson.dependencies['wickrio-bot-api']}`;
-    const obj = {
+    return {
       reply,
       state: state.NONE,
     };
-    return obj;
   }
 }
 

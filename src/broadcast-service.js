@@ -1,4 +1,5 @@
 const WickrIOAPI = require('wickrio_addon');
+const fs = require('fs');
 const logger = require('./logger');
 const FileHandler = require('./helpers/file-handler');
 const WriteMessageIDDB = require('./helpers/write-message-id-db');
@@ -7,6 +8,11 @@ const updateLastID = require('./helpers/message-id-helper');
 
 const fileHandler = new FileHandler();
 const writeMessageIdDb = new WriteMessageIDDB();
+
+// TODO make fs a variable that is passed into the constructor
+if (!fs.existsSync(`${process.cwd()}/files`)) {
+  fs.mkdirSync(`${process.cwd()}/files`);
+}
 
 const dir = `${process.cwd()}/files/`;
 

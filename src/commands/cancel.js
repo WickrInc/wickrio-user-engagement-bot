@@ -2,7 +2,12 @@ const state = require('../state');
 
 
 class Cancel {
-  static shouldExecute() {}
+  static shouldExecute(command) {
+    if (command === '/cancel') {
+      return true;
+    }
+    return false;
+  }
 
   static execute() {
     const reply = 'Previous command canceled, send a new command or enter /help for a list of commands.';

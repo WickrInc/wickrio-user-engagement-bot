@@ -4,10 +4,14 @@ const state = require('../state');
 class InitializeBroadcast {
   constructor(broadcastService) {
     this.broadcastService = broadcastService;
+    this.commandString = 'send';
   }
 
-  static shouldExecute(command, state) {
-
+  shouldExecute(command) {
+    if (command === this.commandString) {
+      return true;
+    }
+    return false;
   }
 
   execute(message, userEmail) {

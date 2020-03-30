@@ -1,8 +1,11 @@
 const state = require('../state');
 
 class Help {
-  static shouldExecute(command, state, message) {
-
+  static shouldExecute(command) {
+    if (command === '/help') {
+      return true;
+    }
+    return false;
   }
 
   static execute() {
@@ -19,11 +22,10 @@ class Help {
     + '/version : Get the version of the integration\n'
     + '/cancel : To cancel the last operation and enter a new command\n'
     + '/files : To get a list of saved files that can be broadcast to';
-    const obj = {
+    return {
       reply,
       state: state.NONE,
     };
-    return obj;
   }
 }
 

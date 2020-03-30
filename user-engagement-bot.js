@@ -9,6 +9,7 @@ const pkgjson = require('./package.json');
 const writer = require('./src/helpers/message-writer.js');
 const logger = require('./src/logger');
 const WhitelistRepository = require('./src/helpers/whitelist');
+const Version = require('./src/commands/version');
 
 const FileHandler = require('./src/helpers/file-handler');
 const broadcast = require('./src/commands/broadcast');
@@ -116,6 +117,11 @@ async function listen(message) {
       return;
     }
     */
+    if (command === '/version') {
+      const obj = Version.execute();
+      const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply);
+      return;
+    }
 
     if (!verifyUser(userEmail)) {
       const reply = "Hey, this bot is just for announcements and can't respond to you personally. If you have a question, please get a hold of us a support@wickr.com or visit us a support.wickr.com. Thanks, Team Wickr";
@@ -125,15 +131,10 @@ async function listen(message) {
       return;
     }
 
-    if (command === '/version') {
-      const reply = `*Versions*\nIntegration: ${pkgjson.version
-      }\nWickrIO Addon: ${pkgjson.dependencies.wickrio_addon
-      }\nWickrIO API: ${pkgjson.dependencies['wickrio-bot-api']}`;
-      const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
-      return;
-    } if (command === '/messages') {
+    if (command === '/messages') {
       const path = `${process.cwd()}/attachments/messages.txt`;
       const uMessage = WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path);
+      return;
     }
 
     let user = bot.getUser(userEmail); // Look up user by their wickr email
