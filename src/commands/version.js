@@ -2,8 +2,11 @@ const state = require('../state');
 const pkgjson = require('../../package.json');
 
 class Version {
-  static shouldExecute(command, state, message) {
-
+  static shouldExecute(messageService) {
+    if (messageService.getCommand() === '/version') {
+      return true;
+    }
+    return false;
   }
 
   static execute() {

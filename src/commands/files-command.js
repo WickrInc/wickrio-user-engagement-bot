@@ -2,6 +2,8 @@ const logger = require('../logger');
 const state = require('../state');
 
 // TODO add a delete file command??
+// TODO add the ability to preview the contents of the file/ length of file??
+// TODO this command should return the files that are saved
 class FileCommand {
   // TODO is this the proper way? or should should execute be static?
   constructor(broadcastService) {
@@ -9,8 +11,8 @@ class FileCommand {
     this.commandString = '/files';
   }
 
-  shouldExecute(command) {
-    if (command === this.commandString) {
+  shouldExecute(messageService) {
+    if (messageService.getCommand() === this.commandString) {
       return true;
     }
     return false;

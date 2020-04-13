@@ -1,27 +1,25 @@
-'use strict'
-
 const logger = require('../logger');
 const state = require('../state');
 
-const broadcastService = new BroadcastService();
-
-//TODO use this instead of putting it in main!
+// TODO use this instead of putting it in main!
 class Messages {
-  shouldExecute() {
-
+  static shouldExecute(messageService) {
+    if (messageService.getCommand() === '/messages') {
+      return true;
+    }
+    return false;
   }
 
-  execute() {
-    let reply = '';
-    var path = process.cwd() + "/attachments/messages.txt";
-    var uMessage = WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path);
+  static execute() {
+    const reply = '';
+    const path = `${process.cwd()}/attachments/messages.txt`;
+    const uMessage = WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path);
     const obj = {
       reply,
       state: state.NONE,
     };
     return obj;
   }
-
 }
 
 module.exports = Messages;

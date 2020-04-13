@@ -2,8 +2,8 @@ const state = require('../state');
 
 
 class Cancel {
-  static shouldExecute(command) {
-    if (command === '/cancel') {
+  static shouldExecute(messageService) {
+    if (messageService.getCommand() === '/cancel') {
       return true;
     }
     return false;

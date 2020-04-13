@@ -1,17 +1,23 @@
 
 const logger = require('../logger');
-const state = require('../state');
+const State = require('../state');
 const BroadcastService = require('../broadcast-service');
 
 class ChooseFile {
   constructor(broadcastService) {
     this.broadcastService = broadcastService;
+    this.state = State.CHOOSE_FILE;
   }
 
-  static shouldExecute() {
+  shouldExecute(messageService) {
+    if (messageService.getCurrentState() === this.state) {
+      return true;
+    }
+    return false;
   }
 
-  execute(index) {
+  execute(messageService) {
+    const index = messageService.getMessage();
     let reply = null;
     let obj;
     const fileArr = this.broadcastService.getFileArr();
@@ -20,7 +26,7 @@ class ChooseFile {
       reply = `Index: ${index} is out of range. Please enter a number between 1 and ${length}`;
       obj = {
         reply,
-        state: state.CHOOSE_FILE,
+        state: State.CHOOSE_FILE,
       };
     } else {
       // logger.debug('here is the other fileArr', fileArr, '\n');
@@ -32,7 +38,7 @@ class ChooseFile {
       this.broadcastService.broadcastToFile(fileName);
       obj = {
         reply,
-        state: state.NONE,
+        state: State.NONE,
       };
     }
     return obj;

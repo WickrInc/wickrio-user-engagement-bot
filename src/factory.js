@@ -1,44 +1,49 @@
-const broadcast = require('./commands/broadcast');
 const Help = require('./commands/help');
 const Admin = require('./commands/admin');
 const FilesCommand = require('./commands/files-command');
 const FileReceived = require('./commands/file-received');
 const InitializeBroadcast = require('./commands/initialize-broadcast');
+const InitializeStatus = require('./commands/initialize-status');
 const state = require('./state');
-const msgStatus = require('./commands/status');
+const Status = require('./commands/status');
 const logger = require('./logger');
 const ChooseFile = require('./commands/choose-file');
 const Cancel = require('./commands/cancel');
-
-const sendFile = require('./commands/send-file');
-const BroadcastService = require('./broadcast-service');
-
-const commandList = [
-  Help,
-  Cancel,
-  this.filesCommand,
-  this.initializeBroadcast,
-  this.chooseFile,
-  this.askStatus,
-  this.messageChosen,
-];
+// const BroadcastService = require('./broadcast-service');
 
 // TODO how can we use a new Broadcast service each time???
 class Factory {
-  constructor(whitelist) {
+  constructor(whitelist, broadcastService, statusService) {
     this.admin = new Admin(whitelist);
-    this.broadcastService = new BroadcastService();
+    this.broadcastService = broadcastService;
+    this.statusService = statusService;
     this.initializeBroadcast = new InitializeBroadcast(this.broadcastService);
     this.chooseFile = new ChooseFile(this.broadcastService);
     this.fileReceived = new FileReceived(this.broadcastService);
     this.filesCommand = new FilesCommand(this.broadcastService);
+    this.initializeStatus = new InitializeStatus(this.statusService);
+    this.statusCommand = new Status(this.statusService);
+    this.commandList = [
+      Help,
+      Cancel,
+      this.filesCommand,
+      this.initializeBroadcast,
+      this.chooseFile,
+      this.initializeStatus,
+      this.statusCommand,
+    ];
   }
 
-  execute(currentState, command, arg, message, userEmail) {
-    let obj;
-    for (command of commandList) {
-      if (command.shouldExecute(command, currentState, arg) {
-        obj = command.execute(message, arg, userEmail);
+  newExecute(messageService) {
+    let obj = {
+      reply: 'Command not recognized send the command /help for a list of commands',
+      state: state.NONE,
+    };
+    for (const command of this.commandList) {
+      logger.debug(`command${command}`);
+      if (command.shouldExecute(messageService)) {
+        obj = command.execute(messageService);
+        break;
       }
     }
     return obj;
@@ -57,9 +62,9 @@ class Factory {
     } else if (currentState === state.CHOOSE_FILE) {
       obj = this.chooseFile.execute(message);
     } else if (command === '/status') {
-      obj = msgStatus.askStatus(userEmail);
+      // obj = msgStatus.askStatus(userEmail);
     } else if (currentState === state.WHICH_MESSAGE) {
-      obj = msgStatus.messageChosen(message);
+      // obj = msgStatus.messageChosen(message);
     } else if (command === '/admin') {
       const argList = arg.split(' ');
       logger.debug(argList);
