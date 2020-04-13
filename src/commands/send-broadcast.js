@@ -3,7 +3,6 @@ const WickrIOAPI = require('wickrio_addon');
 const updateLastID = require('../helpers/message-id-helper');
 const BroadcastService = require('../broadcast-service');
 const logger = require('../logger');
-const state = require('../state');
 
 const broadcastService = new BroadcastService();
 const dir = `${process.cwd()}/files/`;

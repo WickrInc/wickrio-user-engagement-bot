@@ -1,55 +1,70 @@
-const broadcast = require('./commands/broadcast');
-const help = require('./commands/help');
+const Help = require('./commands/help');
 const Admin = require('./commands/admin');
 const FilesCommand = require('./commands/files-command');
 const FileReceived = require('./commands/file-received');
 const InitializeBroadcast = require('./commands/initialize-broadcast');
+const InitializeStatus = require('./commands/initialize-status');
 const state = require('./state');
-const msgStatus = require('./commands/status');
+const Status = require('./commands/status');
 const logger = require('./logger');
 const ChooseFile = require('./commands/choose-file');
-const sendFile = require('./commands/send-file');
-const BroadcastService = require('./broadcast-service');
+const Cancel = require('./commands/cancel');
+// const BroadcastService = require('./broadcast-service');
 
-const filesCommand = new FilesCommand();
 // TODO how can we use a new Broadcast service each time???
-const broadcastService = new BroadcastService();
-const initializeBroadcast = new InitializeBroadcast(broadcastService);
-const chooseFile = new ChooseFile(broadcastService);
-const fileReceived = new FileReceived(broadcastService);
-
-// TODO fix this!
 class Factory {
-  constructor(whitelist) {
+  constructor(whitelist, broadcastService, statusService) {
     this.admin = new Admin(whitelist);
+    this.broadcastService = broadcastService;
+    this.statusService = statusService;
+    this.initializeBroadcast = new InitializeBroadcast(this.broadcastService);
+    this.chooseFile = new ChooseFile(this.broadcastService);
+    this.fileReceived = new FileReceived(this.broadcastService);
+    this.filesCommand = new FilesCommand(this.broadcastService);
+    this.initializeStatus = new InitializeStatus(this.statusService);
+    this.statusCommand = new Status(this.statusService);
+    this.commandList = [
+      Help,
+      Cancel,
+      this.filesCommand,
+      this.initializeBroadcast,
+      this.chooseFile,
+      this.initializeStatus,
+      this.statusCommand,
+    ];
   }
 
-  execute(currentState, command, arg, message, userEmail, file, displayName) {
+  newExecute(messageService) {
+    let obj = {
+      reply: 'Command not recognized send the command /help for a list of commands',
+      state: state.NONE,
+    };
+    for (const command of this.commandList) {
+      logger.debug(`command${command}`);
+      if (command.shouldExecute(messageService)) {
+        obj = command.execute(messageService);
+        break;
+      }
+    }
+    return obj;
+  }
+
+  execute(currentState, command, arg, message, userEmail) {
     let obj;
-    // if (!file.trim()) {
-    //   this.file = file;
     if (command === '/help') {
-      obj = help.help();
-    } else if (command === '/cancel') {
-      // TODO turn this into a file!
-      const reply = 'Previous command canceled, send a new command or enter /help for a list of commands.';
-      obj = {
-        reply,
-        state: state.NONE,
-      };
+      obj = Help.execute();
+    } else if (Cancel.shouldExecute(command)) {
+      obj = Cancel.execute();
     } else if (command === '/files') {
-      obj = filesCommand.execute();
+      obj = this.filesCommand.execute();
     } else if (command === '/broadcast') {
-      // obj = broadcast.startBroadcast(arg, userEmail);
-      logger.debug(`in factory:message:${arg}file:${file}userEmail:${userEmail}displayName${displayName}`);
-      obj = initializeBroadcast.execute(arg, userEmail);
+      obj = this.initializeBroadcast.execute(arg, userEmail);
     } else if (currentState === state.CHOOSE_FILE) {
-      // obj = broadcast.fileChosen(message);
-      obj = chooseFile.execute(message);
+      obj = this.chooseFile.execute(message);
     } else if (command === '/status') {
-      obj = msgStatus.askStatus(userEmail);
+      // obj = msgStatus.askStatus(userEmail);
     } else if (currentState === state.WHICH_MESSAGE) {
-      obj = msgStatus.messageChosen(message);
+      // obj = msgStatus.messageChosen(message);
     } else if (command === '/admin') {
       const argList = arg.split(' ');
       logger.debug(argList);
@@ -78,11 +93,10 @@ class Factory {
     return obj;
   }
 
-  // fileReceived(currentState, command, arg, message, userEmail, parsedMessage, file) {
-  fileReceived(file, displayName) {
-    broadcastService.setFileToSend(file);
-    broadcastService.setDisplayName(displayName);
-    return fileReceived.execute();
+  file(file, displayName) {
+    this.broadcastService.setFileToSend(file);
+    this.broadcastService.setDisplayName(displayName);
+    return this.fileReceived.execute();
   }
 }
 

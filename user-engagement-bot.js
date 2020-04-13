@@ -5,22 +5,27 @@ const WickrIOBotAPI = require('wickrio-bot-api');
 
 const { WickrUser } = WickrIOBotAPI;
 const bot = new WickrIOBotAPI.WickrIOBot();
-const pkgjson = require('./package.json');
+// const pkgjson = require('./package.json');
 const writer = require('./src/helpers/message-writer.js');
 const logger = require('./src/logger');
 const WhitelistRepository = require('./src/helpers/whitelist');
+const Version = require('./src/commands/version');
 
 const FileHandler = require('./src/helpers/file-handler');
-const broadcast = require('./src/commands/broadcast');
 const Factory = require('./src/factory');
 const State = require('./src/state');
+const BroadcastService = require('./src/broadcast-service');
+const MessageService = require('./src/message-service');
+const StatusService = require('./src/status-service');
 
 let currentState;
-const help = require('./src/commands/help');
 
 const fileHandler = new FileHandler();
 const whitelist = new WhitelistRepository(fs);
-const factory = new Factory(whitelist);
+const broadcastService = new BroadcastService();
+const statusService = new StatusService();
+
+const factory = new Factory(whitelist, broadcastService, statusService);
 
 let file;
 let filename;
@@ -101,6 +106,8 @@ async function listen(message) {
       logger.debug('Command is empty!');
       // writer.writeFile(message);
     }
+    // TODO what's the difference between full message and message
+    const messageReceived = parsedMessage.message;
     const { argument } = parsedMessage;
     const { userEmail } = parsedMessage;
     const vGroupID = parsedMessage.vgroupid;
@@ -116,6 +123,11 @@ async function listen(message) {
       return;
     }
     */
+    if (command === '/version') {
+      const obj = Version.execute();
+      const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply);
+      return;
+    }
 
     if (!verifyUser(userEmail)) {
       const reply = "Hey, this bot is just for announcements and can't respond to you personally. If you have a question, please get a hold of us a support@wickr.com or visit us a support.wickr.com. Thanks, Team Wickr";
@@ -124,16 +136,11 @@ async function listen(message) {
       writer.writeFile(message);
       return;
     }
-
-    if (command === '/version') {
-      const reply = `*Versions*\nIntegration: ${pkgjson.version
-      }\nWickrIO Addon: ${pkgjson.dependencies.wickrio_addon
-      }\nWickrIO API: ${pkgjson.dependencies['wickrio-bot-api']}`;
-      const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
-      return;
-    } if (command === '/messages') {
+    // TODO move this elsewhere?
+    if (command === '/messages') {
       const path = `${process.cwd()}/attachments/messages.txt`;
       const uMessage = WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path);
+      return;
     }
 
     let user = bot.getUser(userEmail); // Look up user by their wickr email
@@ -152,6 +159,7 @@ async function listen(message) {
     }
     logger.debug('user:', user);
 
+    const messageService = new MessageService(messageReceived, userEmail, argument, command, currentState);
 
     // TODO is this JSON.stringify necessary??
     // How to deal with duplicate files??
@@ -195,11 +203,12 @@ async function listen(message) {
       // TODO parse argument better??
       let obj;
       if (parsedMessage.file) {
-        obj = factory.fileReceived(parsedMessage.file, parsedMessage.filename);
+        obj = factory.file(parsedMessage.file, parsedMessage.filename);
         file = parsedMessage.file;
         filename = parsedMessage.filename;
       } else {
-        obj = factory.execute(currentState, command, argument, parsedMessage.message, userEmail);
+        // obj = factory.execute(currentState, command, argument, parsedMessage.message, userEmail);
+        obj = factory.newExecute(messageService);
       }
       if (obj.reply) {
         logger.debug('Object has a reply');

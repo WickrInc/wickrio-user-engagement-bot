@@ -4,26 +4,30 @@ const state = require('../state');
 class InitializeBroadcast {
   constructor(broadcastService) {
     this.broadcastService = broadcastService;
+    this.commandString = '/send';
   }
 
-  shouldExecute() {
-
+  shouldExecute(messageService) {
+    if (messageService.getCommand() === this.commandString) {
+      return true;
+    }
+    return false;
   }
 
-  execute(message, userEmail) {
-    this.broadcastService.setMessageToSend(message);
-    this.broadcastService.setUserEmail(userEmail);
+  execute(messageService) {
+    this.broadcastService.setMessageToSend(messageService.getArgument());
+    this.broadcastService.setUserEmail(messageService.getUserEmail());
     const fileArr = this.broadcastService.getFiles();
     const length = Math.min(fileArr.length, 5);
     let reply;
-    logger.debug(`message:${message}userEmail:${userEmail}`);
+    logger.debug(`message:${messageService.getMessage()}userEmail:${messageService.getUserEmail()}`);
     // TODO check for undefined??
-    if (!message || !message.length === 0) {
+    if (!messageService.getMessage() || !messageService.getMessage().length === 0) {
       reply = 'Must have a message or file to broadcast, Usage: /broadcast <message>';
     }
     if (length > 0) {
       reply = 'To which list would you like to send your message:\n';
-      for (let index = 0; index < length; index++) {
+      for (let index = 0; index < length; index += 1) {
         reply += `(${index + 1}) ${fileArr[index]}\n`;
       }
       const obj = {
