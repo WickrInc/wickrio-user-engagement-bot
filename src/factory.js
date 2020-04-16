@@ -1,5 +1,5 @@
 const Help = require('./commands/help');
-const Admin = require('./commands/admin');
+// const Admin = require('./commands/admin');
 const FilesCommand = require('./commands/files-command');
 const FileReceived = require('./commands/file-received');
 const InitializeBroadcast = require('./commands/initialize-broadcast');
@@ -13,8 +13,8 @@ const Cancel = require('./commands/cancel');
 
 // TODO how can we use a new Broadcast service each time???
 class Factory {
-  constructor(whitelist, broadcastService, statusService) {
-    this.admin = new Admin(whitelist);
+  constructor(broadcastService, statusService) {
+    // this.admin = new Admin(whitelist);
     this.broadcastService = broadcastService;
     this.statusService = statusService;
     this.initializeBroadcast = new InitializeBroadcast(this.broadcastService);
@@ -35,10 +35,11 @@ class Factory {
   }
 
   newExecute(messageService) {
-    let obj = {
-      reply: 'Command not recognized send the command /help for a list of commands',
-      state: state.NONE,
-    };
+    let obj;
+    // let obj = {
+    //   reply: 'Command not recognized send the command /help for a list of commands',
+    //   state: state.NONE,
+    // };
     for (const command of this.commandList) {
       logger.debug(`command${command}`);
       if (command.shouldExecute(messageService)) {
