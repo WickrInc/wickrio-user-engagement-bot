@@ -8,7 +8,7 @@ const bot = new WickrIOBotAPI.WickrIOBot();
 // const pkgjson = require('./package.json');
 const writer = require('./src/helpers/message-writer.js');
 const logger = require('./src/logger');
-const WhitelistRepository = require('./src/helpers/whitelist');
+// const WhitelistRepository = require('./src/helpers/whitelist');
 const Version = require('./src/commands/version');
 
 const FileHandler = require('./src/helpers/file-handler');
@@ -21,11 +21,11 @@ const StatusService = require('./src/status-service');
 let currentState;
 
 const fileHandler = new FileHandler();
-const whitelist = new WhitelistRepository(fs);
+// const whitelist = new WhitelistRepository(fs);
 const broadcastService = new BroadcastService();
 const statusService = new StatusService();
 
-const factory = new Factory(whitelist, broadcastService, statusService);
+const factory = new Factory(broadcastService, statusService);
 
 let file;
 let filename;
@@ -74,6 +74,9 @@ async function main() {
         reason: 'Client not able to start',
       });
     }
+
+    // TODO set to true and send from a non admin and see what happens
+    bot.setAdminOnly(false);
 
     WickrIOAPI.cmdSetControl('cleardb', 'true');
     WickrIOAPI.cmdSetControl('contactbackup', 'false');
@@ -129,13 +132,31 @@ async function listen(message) {
       return;
     }
 
-    if (!verifyUser(userEmail)) {
+    // put this in it's own command
+    if (command === '/help') {
+      const helpstring = '*Messaging Commands*\n'
+          + '*Admin Commands*\n'
+          + '%{adminHelp}\n'
+          + '*Send Commands*\n'
+          + '/send : start sending to a directory of random users\n'
+          + '/cancel : stop sending to the directroy\n'
+          + '*Other Commands*\n'
+          + '/help : Show help information\n'
+          + '/version : Show the version numbers';
+      const reply = bot.getAdminHelp(helpstring);
+      const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
+      logger.debug(sMessage);
+      return;
+    }
+
+    if (!parsedMessage.isAdmin) {
       const reply = "Hey, this bot is just for announcements and can't respond to you personally. If you have a question, please get a hold of us a support@wickr.com or visit us a support.wickr.com. Thanks, Team Wickr";
       const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
       logger.debug(sMessage);
       writer.writeFile(message);
       return;
     }
+
     // TODO move this elsewhere?
     if (command === '/messages') {
       const path = `${process.cwd()}/attachments/messages.txt`;
@@ -244,17 +265,6 @@ function replyWithButtons(message) {
   const buttons = [button1, button2];
 
   const bMessage = WickrIOAPI.cmdSendNetworkMessage(broadcastMsgToSend, '', '', messageID, flags, buttons);
-}
-
-function verifyUser(user) {
-  logger.debug('verifying user');
-  const whitelistedUsers = whitelist.getWhitelist();
-  logger.debug(`whitelist:${whitelistedUsers.toString()};`);
-  const found = whitelistedUsers.indexOf(user);
-  if (found === -1) {
-    return false;
-  }
-  return true;
 }
 
 main();
