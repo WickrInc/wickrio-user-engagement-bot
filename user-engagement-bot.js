@@ -228,8 +228,8 @@ async function listen(message) {
         file = parsedMessage.file;
         filename = parsedMessage.filename;
       } else {
-        // obj = factory.execute(currentState, command, argument, parsedMessage.message, userEmail);
-        obj = factory.newExecute(messageService);
+        obj = factory.execute(messageService);
+        logger.debug(`obj${obj}`);
       }
       if (obj.reply) {
         logger.debug('Object has a reply');
@@ -243,28 +243,5 @@ async function listen(message) {
   }
 }
 
-function affirmativeReply(message) {
-  return message.toLowerCase() === 'yes' || message.toLowerCase() === 'y';
-}
-
-function negativeReply(message) {
-  return message.toLowerCase() === 'no' || message.toLowerCase() === 'n';
-}
-
-function replyWithButtons(message) {
-  const button1 = {
-    type: 'message',
-    text: 'Yes',
-    message: 'yes',
-  };
-  const button2 = {
-    type: 'message',
-    text: 'No',
-    message: 'no',
-  };
-  const buttons = [button1, button2];
-
-  const bMessage = WickrIOAPI.cmdSendNetworkMessage(broadcastMsgToSend, '', '', messageID, flags, buttons);
-}
 
 main();

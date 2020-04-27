@@ -1,47 +1,35 @@
 const logger = require('../logger');
-const state = require('../state');
+const State = require('../state');
 
 class InitializeBroadcast {
   constructor(broadcastService) {
     this.broadcastService = broadcastService;
-    this.commandString = '/send';
+    this.commandString = '/broadcast';
   }
 
   shouldExecute(messageService) {
     if (messageService.getCommand() === this.commandString) {
+      logger.debug('We should');
       return true;
     }
     return false;
   }
 
   execute(messageService) {
-    this.broadcastService.setMessageToSend(messageService.getArgument());
+    logger.debug('We did');
+    this.broadcastService.setMessage(messageService.getArgument());
     this.broadcastService.setUserEmail(messageService.getUserEmail());
-    const fileArr = this.broadcastService.getFiles();
-    const length = Math.min(fileArr.length, 5);
-    let reply;
-    logger.debug(`message:${messageService.getMessage()}userEmail:${messageService.getUserEmail()}`);
+    let reply = 'Would you like to ask the recipients for an acknowledgement?';
+    let state = State.ASK_FOR_ACK;
     // TODO check for undefined??
-    if (!messageService.getMessage() || !messageService.getMessage().length === 0) {
+    if (!messageService.getArgument() || messageService.getArgument().length === 0) {
       reply = 'Must have a message or file to broadcast, Usage: /broadcast <message>';
+      state = State.NONE;
     }
-    if (length > 0) {
-      reply = 'To which list would you like to send your message:\n';
-      for (let index = 0; index < length; index += 1) {
-        reply += `(${index + 1}) ${fileArr[index]}\n`;
-      }
-      const obj = {
-        reply,
-        state: state.CHOOSE_FILE,
-      };
-      return obj;
-    }
-    reply = 'There are no files available to send to. Please upload file for broadcast first.';
-    const obj = {
+    return {
       reply,
-      state: state.NONE,
+      state,
     };
-    return obj;
   }
 }
 

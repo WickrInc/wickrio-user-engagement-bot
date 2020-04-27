@@ -1,13 +1,11 @@
-const WickrIOAPI = require('wickrio_addon');
 const fs = require('fs');
 const logger = require('./logger');
 const FileHandler = require('./helpers/file-handler');
-const WriteMessageIDDB = require('./helpers/write-message-id-db');
+const APIService = require('./api-service');
 // TODO proper form??
 const updateLastID = require('./helpers/message-id-helper');
 
 const fileHandler = new FileHandler();
-const writeMessageIdDb = new WriteMessageIDDB();
 
 // TODO make fs a variable that is passed into the constructor
 if (!fs.existsSync(`${process.cwd()}/files`)) {
@@ -18,95 +16,100 @@ const dir = `${process.cwd()}/files/`;
 
 class BroadcastService {
   constructor() {
-    this.fileToSend = '';
-    this.messageToSend = '';
+    this.file = '';
+    this.message = '';
     this.userEmail = '';
-    this.displayName = '';
+    this.display = '';
+    this.ackFlag = false;
+    this.securityGroups = [];
+    this.duration = 0;
+    this.voiceMemo = '';
+    this.repeatFlag = false;
   }
 
-  // TODO what happens if someone is adding a file at the same time as someone is sending a message?
-  getFiles() {
-    try {
-      this.fileArr = fileHandler.listFiles(dir);
-      return this.fileArr;
-    } catch (err) {
-      // TODO fix this!!! gracefully >:)
-      logger.error(err);
-      return null;
-    }
+  setRepeatFlag(repeatFlag) {
+    this.repeatFlag = repeatFlag;
   }
 
-  getFileArr() {
-    return this.fileArr;
+  setFile(file) {
+    this.file = file;
   }
 
-  setFileToSend(file) {
-    this.fileToSend = file;
+  setVoiceMemo(voiceMemo) {
+    this.voiceMemo = voiceMemo;
   }
 
-  setMessageToSend(message) {
-    this.messageToSend = message;
+  setDuration(duration) {
+    this.duration = duration;
   }
 
-  setDisplayName(displayName) {
-    this.displayName = displayName;
+  setMessage(message) {
+    this.message = message;
+  }
+
+  setDisplay(display) {
+    this.display = display;
   }
 
   setUserEmail(email) {
     this.userEmail = email;
   }
 
-  // TODO ask Matt if I should split this
-  broadcastToFile(fileName) {
-    logger.debug('Broadcasting to a file');
-    if (this.fileToSend !== '') {
-      this.broadcastFileToFile(fileName);
-    } else if (this.messageToSend.length !== 0) {
-      this.broadcastMessageToFile(fileName);
+  setSecurityGroups(securityGroups) {
+    this.securityGroups = securityGroups;
+  }
+
+  setAckFlag(ackFlag) {
+    this.ackFlag = ackFlag;
+  }
+
+  broadcastMessage() {
+    let sentBy = `Broadcast message sent by: ${this.userEmail}`;
+    if (this.askForAckFlag) {
+      this.message = `${this.message}\nPlease acknowledge this message by replying with /ack`;
+      sentBy = `${sentBy}\nPlease acknowledge this message by replying with /ack`;
+    }
+    const target = (this.securityGroups.length < 1 || this.securityGroups === undefined) ? 'NETWORK' : this.securityGroups.join();
+    logger.debug(`target${target}`);
+    const currentDate = new Date();
+    // "YYYY-MM-DDTHH:MM:SS.sssZ"
+    const jsonDateTime = currentDate.toJSON();
+    // messageID must be a string
+    // TODO is is necessary to do this?
+    const messageID = `${updateLastID()}`;
+    let uMessage;
+    let reply;
+    if (target === 'NETWORK') {
+      if (this.voiceMemo !== '') {
+        uMessage = APIService.sendNetworkVoiceMemo();
+        reply = 'Voice Memo broadcast in process of being sent';
+      } else if (this.file !== '') {
+        uMessage = APIService.sendNetworkAttachment();
+        reply = 'File broadcast in process of being sent';
+      } else {
+        uMessage = APIService.sendNetworkMessage(this.message, '', '', messageID);
+        reply = 'Broadcast message in process of being sent';
+      }
+    } else if (this.voiceMemo !== '') {
+      uMessage = APIService.sendSecurityGroupVoiceMemo();
+      reply = 'Voice Memo broadcast in process of being sent to security group';
+    } else if (this.file !== '') {
+      uMessage = APIService.sendSecurityGroupAttachment();
+      reply = 'File broadcast in process of being sent to security group';
     } else {
-      // TODO fix this is it necessary?
-      logger.debug(`messageToSend: ${this.messageToSend}`);
-      logger.debug(`messageToSendLength: ${this.messageToSend.length}`);
-      logger.error('Unexpected error occured');
+      uMessage = APIService.sendSecurityGroupMessage(this.securityGroups, this.message, messageID);
+      reply = 'Broadcast message in process of being sent to security group';
     }
-    this.fileToSend = '';
-    this.displayName = '';
-    this.messageToSend = '';
-    this.userEmail = '';
-  }
+    if (this.file !== '') {
+      APIService.writeMessageIDDB(messageID, this.userEmail, target, jsonDateTime, this.display);
+    } else if (this.voiceMemo !== '') {
+      APIService.writeMessageIDDB(messageID, this.userEmail, target, jsonDateTime, `VoiceMemo-${jsonDateTime}`);
+    } else {
+      APIService.writeMessageIDDB(messageID, this.userEmail, target, jsonDateTime, this.message);
+    }
 
-  broadcastMessageToFile(fileName) {
-    // TODO move filePathcreation?
-    const currentDate = new Date();
-    // "YYYY-MM-DDTHH:MM:SS.sssZ"
-    const jsonDateTime = currentDate.toJSON();
-    const filePath = dir + fileName;
-    let uMessage;
-    const messageID = updateLastID();
-    if (fileName.endsWith('hash')) {
-      uMessage = WickrIOAPI.cmdSendMessageUserHashFile(filePath, this.messageToSend, '', '', messageID);
-    } else if (fileName.endsWith('user')) {
-      uMessage = WickrIOAPI.cmdSendMessageUserNameFile(filePath, this.messageToSend, '', '', messageID);
-    }
-    writeMessageIdDb.writeMessageIDDB(messageID, this.userEmail, filePath, jsonDateTime, this.messageToSend);
     logger.debug(`Broadcast uMessage${uMessage}`);
-  }
-
-  broadcastFileToFile(fileName) {
-    // TODO move filePathcreation?
-    const currentDate = new Date();
-    // "YYYY-MM-DDTHH:MM:SS.sssZ"
-    const jsonDateTime = currentDate.toJSON();
-    const filePath = dir + fileName;
-    let uMessage;
-    const messageID = updateLastID();
-    if (fileName.endsWith('hash')) {
-      uMessage = WickrIOAPI.cmdSendAttachmentUserHashFile(filePath, this.fileToSend, this.displayName, '', '', messageID);
-    } else if (fileName.endsWith('user')) {
-      uMessage = WickrIOAPI.cmdSendAttachmentUserNameFile(filePath, this.fileToSend, this.displayName, '', '', messageID);
-    }
-    writeMessageIdDb.writeMessageIDDB(messageID, this.userEmail, filePath, jsonDateTime, this.displayName);
-    logger.debug(`Broadcast uMessage${uMessage}`);
+    return reply;
   }
 
   // TODO check if this works as expected

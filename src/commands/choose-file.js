@@ -1,7 +1,6 @@
 
 const logger = require('../logger');
 const State = require('../state');
-const BroadcastService = require('../broadcast-service');
 
 class ChooseFile {
   constructor(broadcastService) {
@@ -22,7 +21,7 @@ class ChooseFile {
     let obj;
     const fileArr = this.broadcastService.getFileArr();
     const length = Math.min(fileArr.length, 5);
-    if (!BroadcastService.isInt(index) || index < 1 || index > length) {
+    if (!messageService.isInt() || index < 1 || index > length) {
       reply = `Index: ${index} is out of range. Please enter a number between 1 and ${length}`;
       obj = {
         reply,

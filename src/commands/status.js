@@ -21,7 +21,7 @@ class Status {
     let obj;
     const index = messageService.getMessage();
     const length = Math.min(currentEntries.length, 5);
-    if (!Status.isInt(index) || index < 1 || index > length) {
+    if (!messageService.isInt() || index < 1 || index > length) {
       reply = `Index: ${index} is out of range. Please enter a number between 1 and ${length}`;
       obj = {
         reply,
@@ -36,10 +36,6 @@ class Status {
       };
     }
     return obj;
-  }
-
-  static isInt(value) {
-    return !(Number.isNaN(value));
   }
 }
 

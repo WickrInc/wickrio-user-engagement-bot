@@ -27,6 +27,35 @@ class MessageService {
   getCurrentState() {
     return this.currentState;
   }
+
+  affirmativeReply() {
+    return this.message.toLowerCase() === 'yes' || this.message.toLowerCase() === 'y';
+  }
+
+  negativeReply() {
+    return this.message.toLowerCase() === 'no' || this.message.toLowerCase() === 'n';
+  }
+
+  // TODO check if this works as expected
+  isInt() {
+    return !(Number.isNaN(this.message));
+  }
+
+
+  static replyWithButtons(message) {
+    const button1 = {
+      type: 'message',
+      text: 'Yes',
+      message: 'yes',
+    };
+    const button2 = {
+      type: 'message',
+      text: 'No',
+      message: 'no',
+    };
+    const buttons = [button1, button2];
+    // Send message with buttons here
+  }
 }
 
 module.exports = MessageService;

@@ -70,7 +70,6 @@ module.exports = FileHandler;
 function main() {
   FileHandler.listFiles('./attachments');
   FileHandler.checkFile('./attachments', 'messages.txt');
-  FileHandler.checkFile('./attachments', 'toren');
 }
 
 // main();

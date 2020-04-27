@@ -3,4 +3,10 @@ module.exports = Object.freeze({
   CHOOSE_FILE: 1,
   WHICH_MESSAGE: 2,
   FILE_TYPE: 3,
+  ASK_FOR_ACK: 4,
+  WHICH_GROUPS: 5,
+  CONFIRM_GROUPS: 6,
+  ASK_REPEAT: 7,
+  ACTIVE_REPEAT: 8,
+  TIMES_REPEAT: 9,
 });
