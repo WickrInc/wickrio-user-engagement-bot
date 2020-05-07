@@ -1,33 +1,16 @@
 const WickrIOAPI = require('wickrio_addon');
+const cron = require('node-cron');
+
 const logger = require('./logger');
+const APIService = require('./api-service');
 
 class StatusService {
-  constructor() {
-    this.userEmail = '';
-  }
-
-  getUserEmail() {
-    return this.userEmail;
-  }
-
-  setUserEmail(email) {
-    this.userEmail = email;
-  }
-
-  getMessageEntries() {
-    return this.messageEntries;
-  }
-
-  initMessageEntries(userEmail) {
+  static getMessageEntries(userEmail) {
     this.messageEntries = [];
     const tableDataRaw = WickrIOAPI.cmdGetMessageIDTable('0', '1000');
     const tableData = JSON.parse(tableDataRaw);
-    logger.debug('Here is table data:', tableData);
-    logger.debug('And the useremail:', userEmail);
     for (let i = tableData.length - 1; i >= 0; i -= 1) {
       const entry = tableData[i];
-      logger.debug(`entry: ${entry}`);
-      // logger.debug("entry keys: " + Object.keys(entry));
       if (entry.sender === userEmail) {
         this.messageEntries.push(entry);
       }
@@ -39,38 +22,56 @@ class StatusService {
   }
 
   // Type is status or report
-  // TODO Should this be static?
   static getStatus(messageID, type, asyncStatus) {
   // TODO Here we need which Message??
     let statusData;
     try {
-      statusData = WickrIOAPI.cmdGetMessageStatus(messageID, type, '0', '1000');
+      statusData = APIService.getMessageStatus(messageID, type, '0', '1000');
     } catch (err) {
       if (asyncStatus) {
-        const returnObj = {
+        return {
           statusString: 'No data found for that message',
           complete: true,
         };
-        return returnObj;
       }
       return 'No data found for that message';
     }
     const messageStatus = JSON.parse(statusData);
-    const statusString = '*Message Status:*\n'
+    let statusString = '*Message Status:*\n'
                    + `Total Users: ${messageStatus.num2send}\n`
                    + `Messages Sent: ${messageStatus.sent}\n`
                    + `Message pending to Users: ${messageStatus.pending}\n`
                    + `Message failed to send: ${messageStatus.failed}`;
-    // console.log("here is the message status" + statusString);
+    if (messageStatus.ignored !== undefined) {
+      statusString = `${statusString}Messages Ignored: ${messageStatus.ignored}`;
+    }
     if (asyncStatus) {
       const complete = messageStatus.pending === 0;
-      const returnObj = {
+      return {
         statusString,
         complete,
       };
-      return returnObj;
     }
     return statusString;
+  }
+
+  static getMessageEntry(messageID) {
+    return APIService.getMessageIDEntry(messageID);
+  }
+
+  static asyncStatus(messageID, vGroupID) {
+    logger.debug('Enter asyncStatus ');
+    const timeString = '*/30 * * * * *';
+    const cronJob = cron.schedule(timeString, () => {
+      logger.debug('Running cronjob');
+      const statusObj = StatusService.getStatus(messageID, 'summary', true);
+      APIService.sendRoomMessage(vGroupID, statusObj.statusString);
+      if (statusObj.complete) {
+        return cronJob.stop();
+      }
+      return false;
+    });
+    cronJob.start();
   }
 }
 

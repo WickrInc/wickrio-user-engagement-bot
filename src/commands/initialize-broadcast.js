@@ -9,14 +9,12 @@ class InitializeBroadcast {
 
   shouldExecute(messageService) {
     if (messageService.getCommand() === this.commandString) {
-      logger.debug('We should');
       return true;
     }
     return false;
   }
 
   execute(messageService) {
-    logger.debug('We did');
     this.broadcastService.setMessage(messageService.getArgument());
     this.broadcastService.setUserEmail(messageService.getUserEmail());
     let reply = 'Would you like to ask the recipients for an acknowledgement?';

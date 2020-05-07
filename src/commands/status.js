@@ -1,38 +1,44 @@
 const logger = require('../logger');
-const State = require('../state');
+const state = require('../state');
 const StatusService = require('../status-service');
 
 class Status {
-  constructor(statusService) {
-    this.statusService = statusService;
-    this.state = State.WHICH_MESSAGE;
-  }
-
-  shouldExecute(messageService) {
-    if (messageService.getCurrentState() === this.state) {
+  static shouldExecute(messageService) {
+    if (messageService.getCommand() === '/status') {
       return true;
     }
     return false;
   }
 
-  execute(messageService) {
-    let reply;
-    const currentEntries = this.statusService.getMessageEntries();
+  static execute(messageService) {
+    const currentEntries = StatusService.getMessageEntries(messageService.getUserEmail());
+    let reply = '';
     let obj;
-    const index = messageService.getMessage();
-    const length = Math.min(currentEntries.length, 5);
-    if (!messageService.isInt() || index < 1 || index > length) {
-      reply = `Index: ${index} is out of range. Please enter a number between 1 and ${length}`;
+    if (currentEntries.length < 1) {
+      reply = 'There are no previous messages to display';
       obj = {
         reply,
-        state: State.WHICH_MESSAGE,
+        state: state.NONE,
       };
     } else {
-      const messageID = `${currentEntries[parseInt(index, 10) - 1].message_id}`;
-      reply = StatusService.getStatus(messageID, 'summary', false);
+      const length = Math.min(currentEntries.length, 5);
+      let contentData;
+      let index = 1;
+      const messageList = [];
+      let messageString = '';
+      for (let i = 0; i < currentEntries.length; i += 1) {
+        contentData = StatusService.getMessageEntry(currentEntries[i].message_id);
+        const contentParsed = JSON.parse(contentData);
+        messageList.push(contentParsed.message);
+        messageString += `(${index}) ${contentParsed.message}\n`;
+        index += 1;
+      }
+      reply = `Here are the past ${length} broadcast message(s):\n`
+        + `${messageString}`
+        + 'Which message would you like to see the status of?';
       obj = {
         reply,
-        state: State.NONE,
+        state: state.WHICH_MESSAGE,
       };
     }
     return obj;

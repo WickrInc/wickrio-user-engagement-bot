@@ -2,6 +2,7 @@ const fs = require('fs');
 const logger = require('./logger');
 const FileHandler = require('./helpers/file-handler');
 const APIService = require('./api-service');
+const StatusService = require('./status-service');
 // TODO proper form??
 const updateLastID = require('./helpers/message-id-helper');
 
@@ -63,9 +64,9 @@ class BroadcastService {
     this.ackFlag = ackFlag;
   }
 
-  broadcastMessage() {
-    let sentBy = `Broadcast message sent by: ${this.userEmail}`;
-    if (this.askForAckFlag) {
+  broadcastMessage(vGroupID) {
+    let sentBy = `\n\nBroadcast message sent by: ${this.userEmail}`;
+    if (this.ackFlag) {
       this.message = `${this.message}\nPlease acknowledge this message by replying with /ack`;
       sentBy = `${sentBy}\nPlease acknowledge this message by replying with /ack`;
     }
@@ -81,20 +82,20 @@ class BroadcastService {
     let reply;
     if (target === 'NETWORK') {
       if (this.voiceMemo !== '') {
-        uMessage = APIService.sendNetworkVoiceMemo();
+        uMessage = APIService.sendNetworkVoiceMemo(this.voiceMemo, this.duration, messageID, sentBy);
         reply = 'Voice Memo broadcast in process of being sent';
       } else if (this.file !== '') {
-        uMessage = APIService.sendNetworkAttachment();
+        uMessage = APIService.sendNetworkAttachment(this.file, this.display, messageID, sentBy);
         reply = 'File broadcast in process of being sent';
       } else {
-        uMessage = APIService.sendNetworkMessage(this.message, '', '', messageID);
+        uMessage = APIService.sendNetworkMessage(this.message, messageID);
         reply = 'Broadcast message in process of being sent';
       }
     } else if (this.voiceMemo !== '') {
-      uMessage = APIService.sendSecurityGroupVoiceMemo();
+      uMessage = APIService.sendSecurityGroupVoiceMemo(this.securityGroups, this.voiceMemo, this.duration, messageID, sentBy);
       reply = 'Voice Memo broadcast in process of being sent to security group';
     } else if (this.file !== '') {
-      uMessage = APIService.sendSecurityGroupAttachment();
+      uMessage = APIService.sendSecurityGroupAttachment(this.securityGroups, this.file, this.display, messageID, sentBy);
       reply = 'File broadcast in process of being sent to security group';
     } else {
       uMessage = APIService.sendSecurityGroupMessage(this.securityGroups, this.message, messageID);
@@ -107,7 +108,7 @@ class BroadcastService {
     } else {
       APIService.writeMessageIDDB(messageID, this.userEmail, target, jsonDateTime, this.message);
     }
-
+    StatusService.asyncStatus(messageID, vGroupID);
     logger.debug(`Broadcast uMessage${uMessage}`);
     return reply;
   }

@@ -1,10 +1,11 @@
 class MessageService {
-  constructor(message, userEmail, argument, command, currentState) {
+  constructor(message, userEmail, argument, command, currentState, vGroupID) {
     this.message = message;
     this.userEmail = userEmail;
     this.argument = argument;
     this.command = command;
     this.currentState = currentState;
+    this.vGroupID = vGroupID;
   }
 
   // TODO why use getters and setters here??
@@ -18,6 +19,10 @@ class MessageService {
 
   getUserEmail() {
     return this.userEmail;
+  }
+
+  getVGroupID() {
+    return this.vGroupID;
   }
 
   getCommand() {

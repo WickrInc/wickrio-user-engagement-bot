@@ -11,25 +11,25 @@ class APIService {
     return temp;
   }
 
-  static sendSecurityGroupVoiceMemo(securityGroups, voiceMemo, duration, messageID, sentby) {
+  static sendSecurityGroupVoiceMemo(securityGroups, voiceMemo, duration, messageID, sentBy) {
     // TODO add time sent to VoiceMemo String?
-    return WickrIOAPI.cmdSendSecurityGroupVoiceMemo(securityGroups, voiceMemo, 'VoiceMemo', duration, '', '', messageID, sentby);
+    return WickrIOAPI.cmdSendSecurityGroupVoiceMemo(securityGroups, voiceMemo, 'VoiceMemo', duration, '', '', messageID, sentBy);
   }
 
-  static sendSecurityGroupAttachment(securityGroups, filename, displayName, messageID, sentby) {
-    return WickrIOAPI.cmdSendSecurityGroupAttachment(securityGroups, filename, displayName, '', '', messageID, sentby);
+  static sendSecurityGroupAttachment(securityGroups, filename, displayName, messageID, sentBy) {
+    return WickrIOAPI.cmdSendSecurityGroupAttachment(securityGroups, filename, displayName, '', '', messageID, sentBy);
   }
 
   static sendSecurityGroupMessage(securityGroups, message, messageID) {
     return WickrIOAPI.cmdSendSecurityGroupMessage(message, securityGroups, '', '', messageID);
   }
 
-  static sendNetworkVoiceMemo(voiceMemo, duration, messageID, sentby) {
-    return WickrIOAPI.cmdSendNetworkVoiceMemo(voiceMemo, 'VoiceMemo', duration, '', '', messageID, sentby);
+  static sendNetworkVoiceMemo(voiceMemo, duration, messageID, sentBy) {
+    return WickrIOAPI.cmdSendNetworkVoiceMemo(voiceMemo, 'VoiceMemo', duration, '', '', messageID, sentBy);
   }
 
-  static sendNetworkAttachment(filename, displayName, messageID, sentby) {
-    return WickrIOAPI.cmdSendNetworkAttachment(filename, displayName, '', '', messageID, sentby);
+  static sendNetworkAttachment(filename, displayName, messageID, sentBy) {
+    return WickrIOAPI.cmdSendNetworkAttachment(filename, displayName, '', '', messageID, sentBy);
   }
 
   static sendNetworkMessage(message, messageID) {
@@ -37,7 +37,19 @@ class APIService {
   }
 
   static writeMessageIDDB(messageId, sender, target, dateSent, messageContent) {
-    WickrIOAPI.cmdAddMessageID(messageId, sender, target, dateSent, messageContent);
+    return WickrIOAPI.cmdAddMessageID(messageId, sender, target, dateSent, messageContent);
+  }
+
+  static getMessageStatus(messageID, type) {
+    return WickrIOAPI.cmdGetMessageStatus(messageID, type, '0', '1000');
+  }
+
+  static getMessageIDEntry(messageID) {
+    return WickrIOAPI.cmdGetMessageIDEntry(messageID);
+  }
+
+  static sendRoomMessage(vGroupID, message) {
+    return WickrIOAPI.cmdSendRoomMessage(vGroupID, message);
   }
 }
 

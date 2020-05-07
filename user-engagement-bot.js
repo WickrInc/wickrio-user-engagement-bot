@@ -15,6 +15,7 @@ const FileHandler = require('./src/helpers/file-handler');
 const Factory = require('./src/factory');
 const State = require('./src/state');
 const BroadcastService = require('./src/broadcast-service');
+const APIService = require('./src/api-service');
 const MessageService = require('./src/message-service');
 const StatusService = require('./src/status-service');
 
@@ -144,7 +145,9 @@ async function listen(message) {
           + '/help : Show help information\n'
           + '/version : Show the version numbers';
       const reply = bot.getAdminHelp(helpstring);
-      const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
+      logger.debug(`vgroupID in help:${vGroupID}`);
+      // const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
+      const sMessage = APIService.sendRoomMessage(vGroupID, reply);
       logger.debug(sMessage);
       return;
     }
@@ -180,7 +183,7 @@ async function listen(message) {
     }
     logger.debug('user:', user);
 
-    const messageService = new MessageService(messageReceived, userEmail, argument, command, currentState);
+    const messageService = new MessageService(messageReceived, userEmail, argument, command, currentState, vGroupID);
 
     // TODO is this JSON.stringify necessary??
     // How to deal with duplicate files??

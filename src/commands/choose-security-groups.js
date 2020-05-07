@@ -19,7 +19,7 @@ class ChooseSecurityGroups {
     let reply;
     let state;
     if (messageService.getMessage() === 'all') {
-      reply = '';
+      reply = 'Would you like to repeat this broadcast message?';
       state = State.ASK_REPEAT;
       return {
         reply,

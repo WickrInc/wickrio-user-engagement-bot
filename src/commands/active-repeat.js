@@ -29,7 +29,7 @@ class AskRepeat {
       }
     } else if (messageService.negativeReply()) {
       this.broadcastService.setRepeatFlag(false);
-      reply = this.broadcastService.broadcastMessage();
+      reply = this.broadcastService.broadcastMessage(messageService.getVGroupID());
       state = State.NONE;
     } else {
       reply = 'Invalid input, please reply with (y)es or (n)o';

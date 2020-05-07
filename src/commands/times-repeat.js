@@ -2,24 +2,28 @@ const logger = require('../logger');
 const State = require('../state');
 
 class TimesRepeat {
-  constructor(broadcastService) {
-    this.broadcastService = broadcastService;
-    this.state = State.ASK_REPEAT;
+  constructor(repeatService) {
+    this.repeatService = repeatService;
+    this.state = State.TIMES_REPEAT;
   }
 
   shouldExecute(messageService) {
-    // TODO could remove the /broadcast check if done right
     if (messageService.getCurrentState() === this.state) {
       return true;
     }
     return false;
   }
 
-  execute(messageService) {
+  static execute(messageService) {
     let state;
     let reply;
-    if (messageService.getMessage()) {
-
+    if (messageService.isInt()) {
+      this.repeatService.setFrequency(messageService.getMessage());
+      reply = 'How often would you like to repeat this message?(5, 10 or 15 minutes)';
+      state = State.REPEAT_FREQUENCY;
+    } else {
+      reply = 'Invalid Input, please enter a number value.';
+      state = State.TIMES_REPEAT;
     }
     return {
       reply,

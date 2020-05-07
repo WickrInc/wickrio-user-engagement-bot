@@ -9,4 +9,5 @@ module.exports = Object.freeze({
   ASK_REPEAT: 7,
   ACTIVE_REPEAT: 8,
   TIMES_REPEAT: 9,
+  REPEAT_FREQUENCY: 10,
 });
