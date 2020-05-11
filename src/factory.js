@@ -13,24 +13,29 @@ const AskForAck = require('./commands/ask-for-ack');
 const ChooseSecurityGroups = require('./commands/choose-security-groups');
 const ConfirmSecurityGroups = require('./commands/confirm-security-groups');
 const AskRepeat = require('./commands/ask-repeat');
+const ActiveRepeat = require('./commands/active-repeat');
 const TimesRepeat = require('./commands/times-repeat');
+const RepeatFrequency = require('./commands/repeat-frequency');
 // const InitializeSend = require('./commands/initialize-send');
 
 // TODO how can we use a new Broadcast service each time???
 class Factory {
   // TODO add send service
-  constructor(broadcastService, statusService) {
+  constructor(broadcastService, sendService, statusService, repeatService) {
     this.broadcastService = broadcastService;
     this.statusService = statusService;
+    this.repeatService = repeatService;
     this.initializeBroadcast = new InitializeBroadcast(this.broadcastService);
-    this.chooseFile = new ChooseFile(this.broadcastService);
-    this.fileReceived = new FileReceived(this.broadcastService);
-    this.filesCommand = new FilesCommand(this.broadcastService);
+    this.chooseFile = new ChooseFile(this.sendService);
+    this.fileReceived = new FileReceived(this.sendService);
+    this.filesCommand = new FilesCommand(this.sendService);
     this.askForAck = new AskForAck(this.broadcastService);
     this.confirmSecurityGroups = new ConfirmSecurityGroups(this.broadcastService);
     this.chooseSecurityGroups = new ChooseSecurityGroups(this.broadcastService);
-    this.askRepeat = new AskRepeat(this.broadcastService);
-    this.timesRepeat = new TimesRepeat(this.broadcastService);
+    this.askRepeat = new AskRepeat(this.repeatService, this.broadcastService);
+    this.timesRepeat = new TimesRepeat(this.repeatService);
+    this.activeRepeat = new ActiveRepeat(this.repeatService);
+    this.repeatFrequency = new RepeatFrequency(this.repeatService);
     // TODO bring send to file back in
     // this.initializeSend = new InitializeSend(
     this.commandList = [
@@ -46,6 +51,8 @@ class Factory {
       this.confirmSecurityGroups,
       this.askRepeat,
       this.timesRepeat,
+      this.activeRepeat,
+      this.repeatFrequency,
     ];
   }
 

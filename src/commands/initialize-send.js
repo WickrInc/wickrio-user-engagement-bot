@@ -17,6 +17,7 @@ class InitializeSend {
   execute(messageService) {
     this.sendService.setMessage(messageService.getArgument());
     this.sendService.setUserEmail(messageService.getUserEmail());
+    this.sendService.setVGroupID(messageService.getVGroupID());
     const fileArr = this.sendService.getFiles();
     const length = Math.min(fileArr.length, 5);
     let reply;

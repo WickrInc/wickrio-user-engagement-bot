@@ -1,10 +1,10 @@
 const logger = require('../logger');
 const State = require('../state');
 
-class TimesRepeat {
+class RepeatFrequency {
   constructor(repeatService) {
     this.repeatService = repeatService;
-    this.state = State.TIMES_REPEAT;
+    this.state = State.REPEAT_FREQUENCY;
   }
 
   shouldExecute(messageService) {
@@ -17,11 +17,12 @@ class TimesRepeat {
   execute(messageService) {
     let state;
     let reply;
+    // TODO more checks required
     if (messageService.isInt()) {
-      this.repeatService.setRepeats(parseInt(messageService.getMessage(), 10));
-      this.repeatService.setVGroupID(messageService.getVGroupID());
-      reply = 'How often would you like to repeat this message?(every 5, 10 or 15 minutes)';
-      state = State.REPEAT_FREQUENCY;
+      this.repeatService.setFrequency(messageService.getMessage());
+      this.repeatService.repeatMessage();
+      reply = 'Broadcast message #1 in the process of being sent...';
+      state = State.NONE;
     } else {
       reply = 'Invalid Input, please enter a number value.';
       state = State.TIMES_REPEAT;
@@ -33,4 +34,4 @@ class TimesRepeat {
   }
 }
 
-module.exports = TimesRepeat;
+module.exports = RepeatFrequency;

@@ -17,7 +17,9 @@ const State = require('./src/state');
 const BroadcastService = require('./src/broadcast-service');
 const APIService = require('./src/api-service');
 const MessageService = require('./src/message-service');
+const SendService = require('./src/send-service');
 const StatusService = require('./src/status-service');
+const RepeatService = require('./src/repeat-service');
 
 let currentState;
 
@@ -25,8 +27,10 @@ const fileHandler = new FileHandler();
 // const whitelist = new WhitelistRepository(fs);
 const broadcastService = new BroadcastService();
 const statusService = new StatusService();
+const repeatService = new RepeatService(broadcastService);
+const sendService = new SendService();
 
-const factory = new Factory(broadcastService, statusService);
+const factory = new Factory(broadcastService, sendService, statusService, repeatService);
 
 let file;
 let filename;
@@ -139,7 +143,7 @@ async function listen(message) {
           + '*Admin Commands*\n'
           + '%{adminHelp}\n'
           + '*Send Commands*\n'
-          + '/send : start sending to a directory of random users\n'
+          + '/send : start sending to a directory of usernames or hashes\n'
           + '/cancel : stop sending to the directroy\n'
           + '*Other Commands*\n'
           + '/help : Show help information\n'

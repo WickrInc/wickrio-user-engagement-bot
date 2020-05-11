@@ -22,6 +22,7 @@ class SendService {
     this.message = '';
     this.userEmail = '';
     this.displayName = '';
+    this.vGroupID = '';
   }
 
   // TODO what happens if someone is adding a file at the same time as someone is sending a message?
@@ -54,6 +55,10 @@ class SendService {
 
   setUserEmail(email) {
     this.userEmail = email;
+  }
+
+  setVGroupID(vGroupID) {
+    this.vGroupID = vGroupID;
   }
 
   // TODO ask Matt if I should split this
