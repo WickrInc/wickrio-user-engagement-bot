@@ -51,6 +51,22 @@ class APIService {
   static sendRoomMessage(vGroupID, message) {
     return WickrIOAPI.cmdSendRoomMessage(vGroupID, message);
   }
+
+  static sendMessageUserHashFile(filePath, message, messageID) {
+    return WickrIOAPI.cmdSendMessageUserHashFile(filePath, message, '', '', messageID);
+  }
+
+  static sendMessageUserNameFile(filePath, message, messageID) {
+    return WickrIOAPI.cmdSendMessageUserNameFile(filePath, message, '', '', messageID);
+  }
+
+  static sendAttachmentUserHashFile(filePath, attachment, display, messageID) {
+    return WickrIOAPI.cmdSendAttachmentUserHashFile(filePath, attachment, display, '', '', messageID);
+  }
+
+  static sendAttachmentUserNameFile(filePath, attachment, display, messageID) {
+    return WickrIOAPI.cmdSendAttachmentUserNameFile(filePath, attachment, display, '', '', messageID);
+  }
 }
 
 module.exports = APIService;

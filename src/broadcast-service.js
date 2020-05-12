@@ -1,19 +1,8 @@
-const fs = require('fs');
 const logger = require('./logger');
-const FileHandler = require('./helpers/file-handler');
 const APIService = require('./api-service');
 const StatusService = require('./status-service');
 // TODO proper form??
 const updateLastID = require('./helpers/message-id-helper');
-
-const fileHandler = new FileHandler();
-
-// TODO make fs a variable that is passed into the constructor
-if (!fs.existsSync(`${process.cwd()}/files`)) {
-  fs.mkdirSync(`${process.cwd()}/files`);
-}
-
-const dir = `${process.cwd()}/files/`;
 
 class BroadcastService {
   constructor() {
@@ -121,7 +110,6 @@ class BroadcastService {
 
   // TODO check if this works as expected
   static isInt(value) {
-    // return !isNaN(value) && (function (x) { return (x | 0) === x; }(parseFloat(value)));
     return !(Number.isNaN(value));
   }
 }

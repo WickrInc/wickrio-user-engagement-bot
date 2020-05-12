@@ -3,6 +3,7 @@ const fs = require('fs');
 const logger = require('./logger');
 const FileHandler = require('./helpers/file-handler');
 const WriteMessageIDDB = require('./helpers/write-message-id-db');
+const APIService = require('./api-service');
 // TODO proper form??
 const updateLastID = require('./helpers/message-id-helper');
 
@@ -61,56 +62,35 @@ class SendService {
     this.vGroupID = vGroupID;
   }
 
-  // TODO ask Matt if I should split this
-  broadcastToFile(fileName) {
+  sendToFile(fileName) {
     logger.debug('Broadcasting to a file');
+    const currentDate = new Date();
+    // "YYYY-MM-DDTHH:MM:SS.sssZ"
+    const jsonDateTime = currentDate.toJSON();
+    // TODO move filePathcreation?
+    const filePath = dir + fileName;
+    let uMessage;
+    const messageID = updateLastID();
     if (this.file !== '') {
-      this.broadcastFileToFile(fileName);
+      if (fileName.endsWith('hash')) {
+        uMessage = APIService.sendAttachmentUserHashFile(filePath, this.file, this.displayName, '', '', messageID);
+      } else if (fileName.endsWith('user')) {
+        uMessage = APIService.sendAttachmentUserNameFile(filePath, this.file, this.displayName, '', '', messageID);
+      }
+      writeMessageIdDb.writeMessageIDDB(messageID, this.userEmail, filePath, jsonDateTime, this.displayName);
     } else if (this.message.length !== 0) {
-      this.broadcastMessageToFile(fileName);
+      if (fileName.endsWith('hash')) {
+        uMessage = APIService.sendMessageUserHashFile(filePath, this.message, '', '', messageID);
+      } else if (fileName.endsWith('user')) {
+        uMessage = APIService.sendMessageUserNameFile(filePath, this.message, '', '', messageID);
+      }
+      writeMessageIdDb.writeMessageIDDB(messageID, this.userEmail, filePath, jsonDateTime, this.message);
     } else {
       // TODO fix this is it necessary?
       logger.debug(`message: ${this.message}`);
       logger.debug(`messageLength: ${this.message.length}`);
       logger.error('Unexpected error occured');
     }
-    this.file = '';
-    this.displayName = '';
-    this.message = '';
-    this.userEmail = '';
-  }
-
-  broadcastMessageToFile(fileName) {
-    // TODO move filePathcreation?
-    const currentDate = new Date();
-    // "YYYY-MM-DDTHH:MM:SS.sssZ"
-    const jsonDateTime = currentDate.toJSON();
-    const filePath = dir + fileName;
-    let uMessage;
-    const messageID = updateLastID();
-    if (fileName.endsWith('hash')) {
-      uMessage = WickrIOAPI.cmdSendMessageUserHashFile(filePath, this.message, '', '', messageID);
-    } else if (fileName.endsWith('user')) {
-      uMessage = WickrIOAPI.cmdSendMessageUserNameFile(filePath, this.message, '', '', messageID);
-    }
-    writeMessageIdDb.writeMessageIDDB(messageID, this.userEmail, filePath, jsonDateTime, this.message);
-    logger.debug(`Broadcast uMessage${uMessage}`);
-  }
-
-  broadcastFileToFile(fileName) {
-    // TODO move filePathcreation?
-    const currentDate = new Date();
-    // "YYYY-MM-DDTHH:MM:SS.sssZ"
-    const jsonDateTime = currentDate.toJSON();
-    const filePath = dir + fileName;
-    let uMessage;
-    const messageID = updateLastID();
-    if (fileName.endsWith('hash')) {
-      uMessage = WickrIOAPI.cmdSendAttachmentUserHashFile(filePath, this.file, this.displayName, '', '', messageID);
-    } else if (fileName.endsWith('user')) {
-      uMessage = WickrIOAPI.cmdSendAttachmentUserNameFile(filePath, this.file, this.displayName, '', '', messageID);
-    }
-    writeMessageIdDb.writeMessageIDDB(messageID, this.userEmail, filePath, jsonDateTime, this.displayName);
     logger.debug(`Broadcast uMessage${uMessage}`);
   }
 }

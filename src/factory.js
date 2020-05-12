@@ -16,7 +16,6 @@ const AskRepeat = require('./commands/ask-repeat');
 const ActiveRepeat = require('./commands/active-repeat');
 const TimesRepeat = require('./commands/times-repeat');
 const RepeatFrequency = require('./commands/repeat-frequency');
-// const InitializeSend = require('./commands/initialize-send');
 
 // TODO how can we use a new Broadcast service each time???
 class Factory {
@@ -37,15 +36,17 @@ class Factory {
     this.activeRepeat = new ActiveRepeat(this.repeatService);
     this.repeatFrequency = new RepeatFrequency(this.repeatService);
     // TODO bring send to file back in
-    // this.initializeSend = new InitializeSend(
+    this.initializeSend = new InitializeSend(this.sendService);
+    this.chooseFile = new ChooseFile(this.sendService);
     this.commandList = [
       Help,
       Cancel,
       this.filesCommand,
-      this.initializeBroadcast,
+      this.initializeSend,
       this.chooseFile,
       Status,
       WhichMessage,
+      this.initializeBroadcast,
       this.askForAck,
       this.chooseSecurityGroups,
       this.confirmSecurityGroups,

@@ -33,7 +33,7 @@ class ChooseFile {
       const fileName = fileArr[parseInt(index, 10) - 1];
       reply += fileName;
       // TODO should I set the fileName as a variable of sendService??
-      this.sendService.broadcastToFile(fileName);
+      this.sendService.sendToFile(fileName);
       obj = {
         reply,
         state: State.NONE,
