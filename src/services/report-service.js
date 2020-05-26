@@ -12,12 +12,16 @@ class ReportService {
       // for (const entry of messageStatus) {
       for (let i = 0; i < messageStatus.length; i += 1) {
         const entry = messageStatus[i];
+        const sentDateString = (entry.sent_datetime !== undefined) ? entry.sent_datetime : '';
+        const readDateString = (entry.read_datetime !== undefined) ? entry.read_datetime : '';
         const reportEntry = ReportService.getReportEntry(entry);
         csvArray.push(
           {
             user: entry.user,
             status: reportEntry.statusString,
             statusMessage: reportEntry.statusMessageString,
+            sentDate: sentDateString,
+            readDate: readDateString,
           },
         );
       }
@@ -72,7 +76,11 @@ class ReportService {
         statusMessageString = entry.status_message;
         break;
       case 6:
-        statusString = 'received';
+        statusString = 'read';
+        statusMessageString = entry.status_message;
+        break;
+      case 7: // NOT SUPPORTED YET
+        statusString = 'delivered';
         statusMessageString = entry.status_message;
         break;
       default:

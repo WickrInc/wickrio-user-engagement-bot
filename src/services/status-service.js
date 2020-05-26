@@ -27,7 +27,7 @@ class StatusService {
                    + `Messages aborted: ${messageStatus.aborted}\n`
                    + `Messages received: ${messageStatus.received}\n`;
     if (messageStatus.ignored !== undefined) {
-      statusString = `\n${statusString}Messages Ignored: ${messageStatus.ignored}`;
+      statusString = `${statusString}Messages Ignored: ${messageStatus.ignored}`;
     }
     if (asyncStatus) {
       const complete = messageStatus.pending === 0;
