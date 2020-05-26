@@ -1,6 +1,5 @@
 const logger = require('../logger');
 const State = require('../state');
-const APIService = require('../api-service');
 
 class AskForAck {
   constructor(broadcastService) {
