@@ -31,7 +31,7 @@ class AskForAck {
         state,
       };
     }
-    const securityGroupList = APIService.getSecurityGroups();
+    const securityGroupList = this.broadcastService.getAPISecurityGroups();
     let groupsString = '';
     for (let i = 0; i < securityGroupList.length; i += 1) {
       // Check if the securityGroup has a size

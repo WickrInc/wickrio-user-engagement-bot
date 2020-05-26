@@ -1,7 +1,7 @@
 module.exports = Object.freeze({
   NONE: 0,
   CHOOSE_FILE: 1,
-  WHICH_MESSAGE: 2,
+  WHICH_STATUS: 2,
   FILE_TYPE: 3,
   ASK_FOR_ACK: 4,
   WHICH_GROUPS: 5,
@@ -10,4 +10,6 @@ module.exports = Object.freeze({
   ACTIVE_REPEAT: 8,
   TIMES_REPEAT: 9,
   REPEAT_FREQUENCY: 10,
+  WHICH_REPORT: 11,
+  WHICH_ABORT: 12,
 });

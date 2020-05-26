@@ -1,10 +1,14 @@
 const logger = require('../logger');
 const State = require('../state');
-const StatusService = require('../status-service');
+const GenericService = require('../services/generic-service');
 
-class WhichMessage {
-  static shouldExecute(messageService) {
-    if (messageService.getCurrentState() === State.WHICH_MESSAGE) {
+class WhichAbort {
+  constructor() {
+    this.state = State.WHICH_ABORT;
+  }
+
+  shouldExecute(messageService) {
+    if (messageService.getCurrentState() === this.state) {
       return true;
     }
     return false;
@@ -12,7 +16,8 @@ class WhichMessage {
 
   static execute(messageService) {
     let reply;
-    const currentEntries = StatusService.getMessageEntries(messageService.getUserEmail());
+    const currentEntries = GenericService.getMessageEntries(messageService.getUserEmail());
+    // TODO do we need an object here or can we just return inside the if/else?
     let obj;
     const index = messageService.getMessage();
     const length = Math.min(currentEntries.length, 5);
@@ -20,11 +25,11 @@ class WhichMessage {
       reply = `Index: ${index} is out of range. Please enter a number between 1 and ${length}`;
       obj = {
         reply,
-        state: State.WHICH_MESSAGE,
+        state: State.WHICH_ABORT,
       };
     } else {
       const messageID = `${currentEntries[parseInt(index, 10) - 1].message_id}`;
-      reply = StatusService.getStatus(messageID, 'summary', false);
+      reply = GenericService.cancelMessageID(messageID);
       obj = {
         reply,
         state: State.NONE,
@@ -34,4 +39,4 @@ class WhichMessage {
   }
 }
 
-module.exports = WhichMessage;
+module.exports = WhichAbort;

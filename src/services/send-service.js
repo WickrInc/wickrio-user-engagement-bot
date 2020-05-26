@@ -1,11 +1,11 @@
 const WickrIOAPI = require('wickrio_addon');
 const fs = require('fs');
-const logger = require('./logger');
-const FileHandler = require('./helpers/file-handler');
-const WriteMessageIDDB = require('./helpers/write-message-id-db');
+const logger = require('../logger');
+const FileHandler = require('../helpers/file-handler');
+const WriteMessageIDDB = require('../helpers/write-message-id-db');
 const APIService = require('./api-service');
 // TODO proper form??
-const updateLastID = require('./helpers/message-id-helper');
+const updateLastID = require('../helpers/message-id-helper');
 
 const fileHandler = new FileHandler();
 const writeMessageIdDb = new WriteMessageIDDB();

@@ -2,10 +2,10 @@ const logger = require('../logger');
 const state = require('../state');
 const GenericService = require('../services/generic-service');
 
-class Status {
-  constructor(statusService) {
-    this.statusService = statusService;
-    this.commandString = '/status';
+class Report {
+  constructor(reportService) {
+    this.reportService = reportService;
+    this.commandString = '/report';
   }
 
   shouldExecute(messageService) {
@@ -40,14 +40,14 @@ class Status {
       }
       reply = `Here are the past ${length} broadcast message(s):\n`
         + `${messageString}`
-        + 'Which message would you like to see the status of?';
+        + 'Which message would you like to see the report of?';
       obj = {
         reply,
-        state: state.WHICH_STATUS,
+        state: state.WHICH_REPORT,
       };
     }
     return obj;
   }
 }
 
-module.exports = Status;
+module.exports = Report;

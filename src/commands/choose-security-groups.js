@@ -1,6 +1,5 @@
 const logger = require('../logger');
 const State = require('../state');
-const APIService = require('../api-service');
 
 class ChooseSecurityGroups {
   constructor(broadcastService) {
@@ -27,7 +26,7 @@ class ChooseSecurityGroups {
       };
     }
     const groups = messageService.getMessage().split(/[^0-9]/);
-    const securityGroupList = APIService.getSecurityGroups();
+    const securityGroupList = this.broadcastService.getAPISecurityGroups();
     let groupsToSend = [];
     let groupsString = '';
     let validInput = true;

@@ -14,12 +14,15 @@ const Version = require('./src/commands/version');
 const FileHandler = require('./src/helpers/file-handler');
 const Factory = require('./src/factory');
 const State = require('./src/state');
-const BroadcastService = require('./src/broadcast-service');
-const APIService = require('./src/api-service');
-const MessageService = require('./src/message-service');
-const SendService = require('./src/send-service');
-const StatusService = require('./src/status-service');
-const RepeatService = require('./src/repeat-service');
+
+const APIService = require('./src/services/api-service');
+const BroadcastService = require('./src/services/broadcast-service');
+const MessageService = require('./src/services/message-service');
+const SendService = require('./src/services/send-service');
+const StatusService = require('./src/services/status-service');
+const RepeatService = require('./src/services/repeat-service');
+const ReportService = require('./src/services/report-service');
+const GenericService = require('./src/services/generic-service');
 
 let currentState;
 
@@ -29,8 +32,16 @@ const broadcastService = new BroadcastService();
 const statusService = new StatusService();
 const repeatService = new RepeatService(broadcastService);
 const sendService = new SendService();
+const reportService = new ReportService();
+const genericService = new GenericService();
 
-const factory = new Factory(broadcastService, sendService, statusService, repeatService);
+const factory = new Factory(
+  broadcastService,
+  sendService,
+  statusService,
+  repeatService,
+  reportService,
+);
 
 let file;
 let filename;
@@ -120,35 +131,59 @@ async function listen(message) {
     const { userEmail } = parsedMessage;
     const vGroupID = parsedMessage.vgroupid;
     const convoType = parsedMessage.convotype;
-    const personal_vGroupID = '';
+    const messageType = parsedMessage.msgtype;
+    const personalVGroupID = '';
     logger.debug(`convoType=${convoType}`);
     // Go back to dev toolkit and fix
     /*
     if(convoType === 'personal') {
-      personal_vGroupID = vGroupID;
+      personalVGroupID = vGroupID;
     } else {
       writer.writeFile(message);
       return;
     }
     */
+    // Send the location as an acknowledgement
+    if (messageType === 'location') {
+      // acknowledges all messages sent to user
+      const userEmailString = `${userEmail}`;
+      const obj = {};
+      obj.location = {
+        latitude: parsedMessage.latitude,
+        longitude: parsedMessage.longitude,
+      };
+      const statusMessage = JSON.stringify(obj);
+      logger.debug(`location statusMessage=${statusMessage}`);
+      genericService.setMessageStatus('', userEmailString, '3', statusMessage);
+      return;
+    }
+
     if (command === '/version') {
       const obj = Version.execute();
       const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply);
       return;
     }
 
-    // put this in it's own command
+    // TODO  put this in it's own command
     if (command === '/help') {
-      const helpstring = '*Messaging Commands*\n'
-          + '*Admin Commands*\n'
-          + '%{adminHelp}\n'
-          + '*Send Commands*\n'
-          + '/send : start sending to a directory of usernames or hashes\n'
-          + '/cancel : stop sending to the directroy\n'
-          + '*Other Commands*\n'
-          + '/help : Show help information\n'
-          + '/version : Show the version numbers';
-      const reply = bot.getAdminHelp(helpstring);
+      const helpString = '*Messages Commands*\n'
+        + '/send <Message> : To send a broadcast message to a given file of user hashes or usernames\n'
+        + 'To save a file of usernames or user hashes - Click the + sign and share the file with the bot\n'
+        + '/broadcast <Message> : To send a broadcast message to the network or security groups\n'
+        + 'To broadcast a file - Click the + sign and share the file with the bot\n'
+        + 'To broadcast a voice memo - Click the microphone button and send a voice memo to the bot\n'
+        + '/ack : To acknowledge a broadcast message \n'
+        + '/messages : To get a text file of all the messages sent to the bot\n'
+        + '/status : To get the status of a broadcast message\n'
+        + '/report : To get a CSV file with the status of each user for a broadcast message\n\n'
+        + '*Admin Commands*\n'
+        + '%{adminHelp}\n'
+        + '*Other Commands*\n'
+        + '/help : Show help information\n'
+        + '/version : Get the version of the integration\n'
+        + '/cancel : To cancel the last operation and enter a new command\n'
+        + '/files : To get a list of saved files available for the /send command';
+      const reply = bot.getAdminHelp(helpString);
       logger.debug(`vgroupID in help:${vGroupID}`);
       // const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
       const sMessage = APIService.sendRoomMessage(vGroupID, reply);
@@ -177,7 +212,7 @@ async function listen(message) {
       wickrUser = new WickrUser(userEmail, {
         index: 0,
         vGroupID,
-        personal_vGroupID,
+        personalVGroupID,
         command: '',
         argument: '',
         confirm: '',

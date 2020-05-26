@@ -1,12 +1,13 @@
-const WickrIOAPI = require('wickrio_addon');
-const logger = require('./logger');
+// TODO what's the correct format here?
+const WickrIOBotAPI = require('wickrio-bot-api');
 
-// TODO make fs a variable that is passed into the constructor
+const bot = new WickrIOBotAPI.WickrIOBot();
+const WickrIOAPI = bot.getWickrIOAddon();
+
 class APIService {
   static getSecurityGroups() {
     const groupData = WickrIOAPI.cmdGetSecurityGroups();
     const temp = JSON.parse(groupData);
-    logger.debug(`temp${temp}`);
     // return JSON.parse(groupData);
     return temp;
   }
@@ -40,6 +41,7 @@ class APIService {
     return WickrIOAPI.cmdAddMessageID(messageId, sender, target, dateSent, messageContent);
   }
 
+  // TODO is hard coding 0 here okay?
   static getMessageStatus(messageID, type) {
     return WickrIOAPI.cmdGetMessageStatus(messageID, type, '0', '1000');
   }
@@ -48,8 +50,16 @@ class APIService {
     return WickrIOAPI.cmdGetMessageIDEntry(messageID);
   }
 
+  static getMessageIDTable() {
+    return WickrIOAPI.cmdGetMessageIDTable('0', '1000');
+  }
+
   static sendRoomMessage(vGroupID, message) {
     return WickrIOAPI.cmdSendRoomMessage(vGroupID, message);
+  }
+
+  static sendRoomAttachment(vGroupID, attachment, display) {
+    return WickrIOAPI.cmdSendRoomAttachment(vGroupID, attachment, display);
   }
 
   static sendMessageUserHashFile(filePath, message, messageID) {
@@ -66,6 +76,14 @@ class APIService {
 
   static sendAttachmentUserNameFile(filePath, attachment, display, messageID) {
     return WickrIOAPI.cmdSendAttachmentUserNameFile(filePath, attachment, display, '', '', messageID);
+  }
+
+  static setMessageStatus(messageID, userID, statusNumber, statusMessage) {
+    return WickrIOAPI.cmdSetMessageStatus(messageID, userID, statusNumber, statusMessage);
+  }
+
+  static send1to1Message(userArray, reply) {
+    return WickrIOAPI.cmdsend1to1Message(userArray, reply);
   }
 }
 

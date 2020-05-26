@@ -1,3 +1,5 @@
+const logger = require('../logger');
+
 class MessageService {
   constructor(message, userEmail, argument, command, currentState, vGroupID) {
     this.message = message;
@@ -43,7 +45,8 @@ class MessageService {
 
   // TODO check if this works as expected
   isInt() {
-    return !(Number.isNaN(this.message));
+    // The + is required to makes sure the string only contains numeric characters
+    return !(Number.isNaN(+this.message));
   }
 
 
