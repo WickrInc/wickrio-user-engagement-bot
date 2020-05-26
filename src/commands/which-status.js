@@ -1,21 +1,18 @@
 const logger = require('../logger');
 const State = require('../state');
 const GenericService = require('../services/generic-service');
+const StatusService = require('../services/status-service');
+
 
 class WhichStatus {
-  constructor(statusService) {
-    this.statusService = statusService;
-    this.state = State.WHICH_STATUS;
-  }
-
-  shouldExecute(messageService) {
-    if (messageService.getCurrentState() === this.state) {
+  static shouldExecute(messageService) {
+    if (messageService.getCurrentState() === State.WHICH_STATUS) {
       return true;
     }
     return false;
   }
 
-  execute(messageService) {
+  static execute(messageService) {
     let reply;
     const currentEntries = GenericService.getMessageEntries(messageService.getUserEmail());
     let obj;
@@ -30,7 +27,7 @@ class WhichStatus {
     } else {
       // Subtract one to account for 0 based indexes
       const messageID = `${currentEntries[parseInt(index, 10) - 1].message_id}`;
-      reply = this.statusService.getStatus(messageID, false);
+      reply = StatusService.getStatus(messageID, false);
       obj = {
         reply,
         state: State.NONE,

@@ -33,7 +33,6 @@ const statusService = new StatusService();
 const repeatService = new RepeatService(broadcastService);
 const sendService = new SendService();
 const reportService = new ReportService();
-const genericService = new GenericService();
 
 const factory = new Factory(
   broadcastService,
@@ -144,6 +143,8 @@ async function listen(message) {
     }
     */
     // Send the location as an acknowledgement
+
+    // TODO create a pre-admin factory method with all the commands that are pre-admin
     if (messageType === 'location') {
       // acknowledges all messages sent to user
       const userEmailString = `${userEmail}`;
@@ -154,13 +155,19 @@ async function listen(message) {
       };
       const statusMessage = JSON.stringify(obj);
       logger.debug(`location statusMessage=${statusMessage}`);
-      genericService.setMessageStatus('', userEmailString, '3', statusMessage);
+      GenericService.setMessageStatus('', userEmailString, '3', statusMessage);
       return;
     }
 
     if (command === '/version') {
       const obj = Version.execute();
       const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply);
+      return;
+    }
+
+    if (command === '/ack') {
+      const userEmailString = `${userEmail}`;
+      GenericService.setMessageStatus('', userEmailString, '3', '');
       return;
     }
 

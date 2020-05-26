@@ -3,12 +3,8 @@ const State = require('../state');
 const GenericService = require('../services/generic-service');
 
 class WhichAbort {
-  constructor() {
-    this.state = State.WHICH_ABORT;
-  }
-
-  shouldExecute(messageService) {
-    if (messageService.getCurrentState() === this.state) {
+  static shouldExecute(messageService) {
+    if (messageService.getCurrentState() === State.WHICH_ABORT) {
       return true;
     }
     return false;

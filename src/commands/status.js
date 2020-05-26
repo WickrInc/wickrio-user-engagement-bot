@@ -3,19 +3,14 @@ const state = require('../state');
 const GenericService = require('../services/generic-service');
 
 class Status {
-  constructor(statusService) {
-    this.statusService = statusService;
-    this.commandString = '/status';
-  }
-
-  shouldExecute(messageService) {
-    if (messageService.getCommand() === this.commandString) {
+  static shouldExecute(messageService) {
+    if (messageService.getCommand() === '/status') {
       return true;
     }
     return false;
   }
 
-  execute(messageService) {
+  static execute(messageService) {
     const currentEntries = GenericService.getMessageEntries(messageService.getUserEmail());
     let reply = '';
     let obj;

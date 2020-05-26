@@ -3,20 +3,15 @@ const GenericService = require('../services/generic-service');
 
 
 class Ack {
-  constructor(genericService) {
-    this.genericService = genericService;
-    this.commandString = '/ack';
-  }
-
-  shouldExecute(messageService) {
-    if (messageService.getCommand() === this.commandString) {
+  static shouldExecute(messageService) {
+    if (messageService.getCommand() === '/ack') {
       return true;
     }
     return false;
   }
 
-  execute(messageService) {
-    GenericService.genericService.setMessageStatus('', messageService.getUserEmail(), '3', '');
+  static execute(messageService) {
+    GenericService.setMessageStatus('', messageService.getUserEmail(), '3', '');
     const reply = '';
     const obj = {
       reply,

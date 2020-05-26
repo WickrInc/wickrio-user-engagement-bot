@@ -4,7 +4,7 @@ const logger = require('../logger');
 const APIService = require('./api-service');
 
 class StatusService {
-  getStatus(messageID, asyncStatus) {
+  static getStatus(messageID, asyncStatus) {
   // TODO Here we need which Message??
     let statusData;
     try {

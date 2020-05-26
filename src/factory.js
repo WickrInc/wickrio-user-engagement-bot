@@ -27,6 +27,7 @@ class Factory {
   // TODO add send service
   constructor(broadcastService, sendService, statusService, repeatService, reportService) {
     this.broadcastService = broadcastService;
+    this.sendService = sendService;
     this.statusService = statusService;
     this.repeatService = repeatService;
     this.reportService = reportService;
@@ -41,10 +42,6 @@ class Factory {
     this.timesRepeat = new TimesRepeat(this.repeatService);
     this.activeRepeat = new ActiveRepeat(this.repeatService);
     this.repeatFrequency = new RepeatFrequency(this.repeatService);
-    this.statusCommand = new Status(this.statusService);
-    this.whichStatus = new WhichStatus(this.statusService);
-    this.report = new Report(this.reportService);
-    this.whichReport = new WhichReport(this.reportService);
     this.initializeSend = new InitializeSend(this.sendService);
     this.chooseFile = new ChooseFile(this.sendService);
     this.commandList = [
@@ -53,10 +50,10 @@ class Factory {
       this.filesCommand,
       this.initializeSend,
       this.chooseFile,
-      this.statusCommand,
-      this.whichStatus,
-      this.report,
-      this.whichReport,
+      Status,
+      WhichStatus,
+      Report,
+      WhichReport,
       this.initializeBroadcast,
       this.askForAck,
       this.chooseSecurityGroups,

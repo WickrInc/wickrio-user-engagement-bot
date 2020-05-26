@@ -3,27 +3,7 @@ const logger = require('../logger');
 const APIService = require('./api-service');
 
 class ReportService {
-  getMessageEntries(userEmail) {
-    this.messageEntries = [];
-    const tableDataRaw = APIService.getMessageIDTable();
-    const tableData = JSON.parse(tableDataRaw);
-    for (let i = tableData.length - 1; i >= 0; i -= 1) {
-      const entry = tableData[i];
-      if (entry.sender === userEmail) {
-        this.messageEntries.push(entry);
-      }
-      if (this.messageEntries.length > 4) {
-        break;
-      }
-    }
-    return this.messageEntries;
-  }
-
-  getMessageEntry(messageID) {
-    return APIService.getMessageIDEntry(messageID);
-  }
-
-  getReport(messageID, vGroupID) {
+  static getReport(messageID, vGroupID) {
     let inc = 0;
     const csvArray = [];
     while (true) {
@@ -48,12 +28,12 @@ class ReportService {
     }
     const now = new Date();
     const dateString = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}_${now.getHours()}_${now.getMinutes()}_${now.getSeconds()}`;
-    this.path = `${process.cwd()}/attachments/report-${dateString}.csv`;
-    ReportService.writeCSVReport(this.path, csvArray);
-    APIService.sendRoomAttachment(vGroupID, this.path, this.path);
+    const path = `${process.cwd()}/attachments/report-${dateString}.csv`;
+    ReportService.writeCSVReport(path, csvArray);
+    APIService.sendRoomAttachment(vGroupID, path, path);
     // TODO make a reply like here is the attachment
     // TODO can replies just be empty?
-    return this.path;
+    return path;
   }
 
   static getReportEntry(entry) {
@@ -96,7 +76,7 @@ class ReportService {
         statusMessageString = entry.status_message;
         break;
       default:
-        // TODO figure out what this should be
+        // TODO figure out what should be
         statusString = 'N/A';
         break;
     }

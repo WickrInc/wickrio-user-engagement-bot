@@ -22,7 +22,7 @@ class InitializeSend {
     const length = Math.min(fileArr.length, 5);
     let reply;
     logger.debug(`message:${messageService.getMessage()}userEmail:${messageService.getUserEmail()}`);
-    // TODO check for undefined??
+    // TODO check for empty string
     if (!messageService.getMessage() || !messageService.getMessage().length === 0) {
       reply = 'Must have a message or file to send, Usage: /send <message>';
     }
@@ -37,6 +37,7 @@ class InitializeSend {
       };
       return obj;
     }
+    // TODO reorganize this and above ^
     reply = 'There are no files available to send to. Please upload file with usernames or hashes first.';
     const obj = {
       reply,

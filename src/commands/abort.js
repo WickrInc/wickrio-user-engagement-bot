@@ -3,13 +3,8 @@ const state = require('../state');
 const GenericService = require('../services/generic-service');
 
 class Abort {
-  constructor(statusService) {
-    this.statusService = statusService;
-    this.commandString = '/abort';
-  }
-
-  shouldExecute(messageService) {
-    if (messageService.getCommand() === this.commandString) {
+  static shouldExecute(messageService) {
+    if (messageService.getCommand() === '/abort') {
       return true;
     }
     return false;

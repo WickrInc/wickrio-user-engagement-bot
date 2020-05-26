@@ -83,7 +83,7 @@ class APIService {
   }
 
   static send1to1Message(userArray, reply) {
-    return WickrIOAPI.cmdsend1to1Message(userArray, reply);
+    return WickrIOAPI.cmdSend1to1Message(userArray, reply);
   }
 }
 
