@@ -3,15 +3,11 @@
     {
       "name": "WickrIO-User-Engagement-Bot",
       "args": [],
-      "script": "node user-engagement-bot.js",
-      "exec_interpreter": "none",
+      "script": "./build/index.js",
+      "exec_interpreter": "exec",
       "autorestart": false,
-      "watch": [
-        "package.json"
-      ],
-      "ignore_watch": [
-        ".git"
-      ],
+      "watch": ["package.json"],
+      "ignore_watch": [".git"],
       "env": {
         "tokens": {}
       },
