@@ -15,3 +15,6 @@ files
 .eslintrc.js
 exclude-list.txt
 sync.sh
+build
+coverage
+.npmignore

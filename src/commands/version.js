@@ -1,23 +1,21 @@
-const state = require('../state');
-const pkgjson = require('../../package.json');
+import state from '../state'
+import pkgjson from '../../package.json'
 
 class Version {
   static shouldExecute(messageService) {
     if (messageService.getCommand() === '/version') {
-      return true;
+      return true
     }
-    return false;
+    return false
   }
 
   static execute() {
-    const reply = `*Versions*\nIntegration: ${pkgjson.version
-    }\nWickrIO Addon: ${pkgjson.dependencies.wickrio_addon
-    }\nWickrIO API: ${pkgjson.dependencies['wickrio-bot-api']}`;
+    const reply = `*Versions*\nIntegration: ${pkgjson.version}\nWickrIO Addon: ${pkgjson.dependencies.wickrio_addon}\nWickrIO API: ${pkgjson.dependencies['wickrio-bot-api']}`
     return {
       reply,
       state: state.NONE,
-    };
+    }
   }
 }
 
-module.exports = Version;
+module.exports = Version

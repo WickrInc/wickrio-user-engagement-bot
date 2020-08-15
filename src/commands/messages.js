@@ -1,25 +1,25 @@
-const logger = require('../logger');
-const state = require('../state');
+import logger from '../logger'
+import state from '../state'
 
 // TODO use this instead of putting it in main!
 class Messages {
   static shouldExecute(messageService) {
     if (messageService.getCommand() === '/messages') {
-      return true;
+      return true
     }
-    return false;
+    return false
   }
 
   static execute() {
-    const reply = '';
-    const path = `${process.cwd()}/attachments/messages.txt`;
-    const uMessage = WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path);
+    const reply = ''
+    const path = `${process.cwd()}/attachments/messages.txt`
+    const uMessage = WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path)
     const obj = {
       reply,
       state: state.NONE,
-    };
-    return obj;
+    }
+    return obj
   }
 }
 
-module.exports = Messages;
+module.exports = Messages

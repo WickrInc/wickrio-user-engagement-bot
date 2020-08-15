@@ -1,5 +1,4 @@
-
-pino = require('pino');
+import pino from 'pino'
 
 const logger = pino({
   prettyPrint: {
@@ -7,31 +6,31 @@ const logger = pino({
     ignore: 'pid,hostname',
   },
   level: 'debug',
-});
+})
 
 const trace = function (data) {
-  logger.trace(data);
-};
+  logger.trace(data)
+}
 
 const debug = function (data) {
-  logger.debug(data);
-};
+  logger.debug(data)
+}
 
 const info = function (data) {
-  logger.info(data);
-};
+  logger.info(data)
+}
 
 const warn = function (data) {
-  logger.warn(data);
-};
+  logger.warn(data)
+}
 
 const error = function (data) {
-  logger.error(data);
-};
+  logger.error(data)
+}
 
 const fatal = function (data) {
-  logger.fatal(data);
-};
+  logger.fatal(data)
+}
 
 module.exports = {
   trace,
@@ -40,4 +39,4 @@ module.exports = {
   warn,
   error,
   fatal,
-};
+}
