@@ -3,7 +3,7 @@ import util from 'util'
 import logger from './logger'
 
 const copyFileAsync = util.promisify(fs.copyFile)
-const readdirAsync = util.promisify(fs.readdir)
+// const readdirAsync = util.promisify(fs.readdir)
 // const readdir = util.promisify(fs.readdir);
 
 class FileHandler {
@@ -16,23 +16,17 @@ class FileHandler {
     // TODO just pass this as a parameter??
     const filePath = `${path}/${file}`
     // TODO fix this! use async await!
-    const as = fs.access(
-      filePath,
-      fs.constants.R_OK | fs.constants.W_OK,
-      err => {
-        if (err) {
-          // TODO fix this!
-          logger.error(
-            `${file} ${
-              err.code === 'ENOENT' ? 'does not exist' : 'is read-only'
-            }`
-          )
-          return false
-        }
-        logger.debug(`${file} exists, and it is writable`)
-        return true
+    fs.access(filePath, fs.constants.R_OK | fs.constants.W_OK, err => {
+      if (err) {
+        // TODO fix this!
+        logger.error(
+          `${file} ${err.code === 'ENOENT' ? 'does not exist' : 'is read-only'}`
+        )
+        return false
       }
-    )
+      logger.debug(`${file} exists, and it is writable`)
+      return true
+    })
   }
 
   findFile(path, fileName) {
@@ -48,10 +42,10 @@ class FileHandler {
         })
       }
     })
-    if (fileArr === undefined || fileArr.length == 0) {
+    if (fileArr === undefined || fileArr.length === 0) {
       return false
     }
-    for (file of fileArr) {
+    for (const file of fileArr) {
       if (file === fileName) {
         found = true
       }
@@ -73,10 +67,10 @@ class FileHandler {
 
 module.exports = FileHandler
 
-function main() {
-  FileHandler.listFiles('./attachments')
-  FileHandler.checkFile('./attachments', 'messages.txt')
-  FileHandler.checkFile('./attachments', 'toren')
-}
+// function main() {
+//   FileHandler.listFiles('./attachments')
+//   FileHandler.checkFile('./attachments', 'messages.txt')
+//   FileHandler.checkFile('./attachments', 'toren')
+// }
 
 // main();

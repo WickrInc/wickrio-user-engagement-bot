@@ -1,6 +1,6 @@
 import WickrIOAPI from 'wickrio_addon'
 import fs from 'fs'
-import { exec, execSync, execFileSync } from 'child_process'
+import { execSync } from 'child_process'
 import logger from '../logger'
 
 // let whitelist;
@@ -73,11 +73,8 @@ class WhitelistRepository {
     logger.debug('pjson', pjson.apps[0].env.tokens.WHITELISTED_USERS.value)
 
     try {
-      const cp = execSync('cp processes.json processes_backup.json')
-      const ps = fs.writeFileSync(
-        './processes.json',
-        JSON.stringify(pjson, null, 2)
-      )
+      execSync('cp processes.json processes_backup.json')
+      fs.writeFileSync('./processes.json', JSON.stringify(pjson, null, 2))
     } catch (err) {
       logger.error(err)
     }

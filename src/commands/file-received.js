@@ -1,4 +1,4 @@
-import logger from '../helpers/logger'
+// import logger from '../helpers/logger'
 import state from '../state'
 
 // TODO add a delete file command??

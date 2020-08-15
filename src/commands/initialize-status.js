@@ -1,5 +1,5 @@
 import WickrIOAPI from 'wickrio_addon'
-import logger from '../helpers/logger'
+// import logger from '../helpers/logger'
 import state from '../state'
 
 class InitializeStatus {

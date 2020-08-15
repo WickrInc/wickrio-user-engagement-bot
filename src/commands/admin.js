@@ -1,4 +1,4 @@
-import WickrIOAPI from 'wickrio_addon'
+// import WickrIOAPI from 'wickrio_addon'
 // const whitelist from '../helpers/whitelist.js');
 import state from '../state'
 import logger from '../logger'
@@ -12,9 +12,9 @@ class Admin {
 
   list() {
     logger.debug('admin list')
-    const whitelisted_users = this.whitelist.getWhitelist()
-    logger.debug(`wl_users${whitelisted_users}`)
-    const userList = whitelisted_users.join('\n')
+    const whitelistedUsers = this.whitelist.getWhitelist()
+    logger.debug(`wl_users${whitelistedUsers}`)
+    const userList = whitelistedUsers.join('\n')
     logger.debug(`userList${userList}`)
     const reply = `Current admins:\n${userList}`
 
@@ -27,13 +27,13 @@ class Admin {
 
   add(userEmail, users) {
     let reply
-    const whitelisted_users = this.whitelist.getWhitelist()
+    const whitelistedUsers = this.whitelist.getWhitelist()
     const addFails = []
-    if (users === undefined || users.length == 0) {
+    if (users === undefined || users.length === 0) {
       reply = 'Command contains no user names to add!'
     } else {
       for (let i = 0; i < users.length; i++) {
-        if (whitelisted_users.includes(users[i])) {
+        if (whitelistedUsers.includes(users[i])) {
           addFails.push(users.splice(i, 1))
           i--
         }
@@ -51,18 +51,13 @@ class Admin {
         // var uMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
 
         for (let i = 0; i < users.length; i++) {
-          whitelisted_users.push(users[i])
+          whitelistedUsers.push(users[i])
         }
-        console.log('whitelisted_users', whitelisted_users)
-        this.whitelist.updateWhitelist(whitelisted_users)
-        // Send a message to all the current white listed users
-        const doneReply = `${userEmail} has added the following admins:\n${users.join(
-          '\n'
-        )}`
-        const uMessage = WickrIOAPI.cmdSend1to1Message(
-          whitelisted_users,
-          doneReply
-        )
+        console.log('whitelistedUsers', whitelistedUsers)
+        this.whitelist.updateWhitelist(
+          whitelistedUsers
+        ) // Send a message to all the current white listed users
+        `${userEmail} has added the following admins:\n${users.join('\n')}`
       }
     }
     const addObj = {
@@ -74,13 +69,13 @@ class Admin {
 
   remove(userEmail, users) {
     const removeFails = []
-    const whitelisted_users = this.whitelist.getWhitelist()
+    const whitelistedUsers = this.whitelist.getWhitelist()
     let reply
-    if (users === undefined || users.length == 0) {
+    if (users === undefined || users.length === 0) {
       reply = 'Command contains no user names to remove'
     } else {
       for (let i = 0; i < users.length; i++) {
-        if (!whitelisted_users.includes(users[i])) {
+        if (!whitelistedUsers.includes(users[i])) {
           removeFails.push(users.splice(i, 1))
           i--
         }
@@ -97,17 +92,12 @@ class Admin {
         // var uMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
 
         for (let i = 0; i < users.length; i++) {
-          whitelisted_users.splice(whitelisted_users.indexOf(users[i]), 1)
+          whitelistedUsers.splice(whitelistedUsers.indexOf(users[i]), 1)
         }
 
-        this.whitelist.updateWhitelist(whitelisted_users)
-        const doneReply = `${userEmail} has removed the following admins:\n${users.join(
-          '\n'
-        )}`
-        const uMessage = WickrIOAPI.cmdSend1to1Message(
-          whitelisted_users,
-          doneReply
-        )
+        this.whitelist.updateWhitelist(
+          whitelistedUsers
+        )`${userEmail} has removed the following admins:\n${users.join('\n')}`
       }
     }
     const removeObj = {

@@ -27,8 +27,8 @@ const statusService = new StatusService()
 
 const factory = new Factory(broadcastService, statusService)
 
-let file
-let filename
+// let file
+// let filename
 
 process.stdin.resume() // so the program will not close instantly
 if (!fs.existsSync(`${process.cwd()}/attachments`)) {
@@ -40,7 +40,7 @@ if (!fs.existsSync(`${process.cwd()}/files`)) {
 
 async function exitHandler(options, err) {
   try {
-    const closed = await bot.close()
+    await bot.close()
     if (err || options.exit) {
       logger.error('Exit reason:', err)
       process.exit()
@@ -89,20 +89,43 @@ async function main() {
   }
 }
 
-async function listen(message) {
+async function listen(rawmsg) {
   try {
     // TODO fix the parseMessage function so it can include control messages
     // TODO add a parseMessage that can get the important parts and leave out recipients
     // Parses an incoming message and returns an object with command, argument, vGroupID and Sender fields
-    const parsedMessage = bot.parseMessage(message)
+    const parsedMessage = bot.parseMessage(rawmsg)
     if (!parsedMessage) {
-      await writer.writeFile(message)
+      await writer.writeFile(rawmsg)
       return
     }
     logger.debug('New incoming Message:', parsedMessage)
     let wickrUser
-    const fullMessage = parsedMessage.message
-    let { command } = parsedMessage
+    let {
+      // time,
+      // messageID,
+      // users,
+      // ttl,
+      // bor,
+      // control,
+      // msgTS,
+      // receiver,
+      file,
+      filename,
+      message,
+      command,
+      argument,
+      vGroupID,
+      convoType,
+      // msgType,
+      userEmail,
+      // isAdmin,
+      // latitude,
+      // longitude,
+      // isVoiceMemo,
+      // voiceMemoDuration,
+    } = parsedMessage
+
     if (command !== undefined) {
       command = command.toLowerCase().trim()
     }
@@ -111,17 +134,12 @@ async function listen(message) {
       // writer.writeFile(message);
     }
     // TODO what's the difference between full message and message
-    const messageReceived = parsedMessage.message
-    const { argument } = parsedMessage
-    const { userEmail } = parsedMessage
-    const vGroupID = parsedMessage.vgroupid
-    const convoType = parsedMessage.convotype
-    const personal_vGroupID = ''
+    const personalvGroupID = ''
     logger.debug(`convoType=${convoType}`)
     // Go back to dev toolkit and fix
     /*
     if(convoType === 'personal') {
-      personal_vGroupID = vGroupID;
+      personalvGroupID = vGroupID;
     } else {
       writer.writeFile(message);
       return;
@@ -129,7 +147,7 @@ async function listen(message) {
     */
     if (command === '/version') {
       const obj = Version.execute()
-      const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply)
+      WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply)
       return
     }
 
@@ -163,7 +181,7 @@ async function listen(message) {
     // TODO move this elsewhere?
     if (command === '/messages') {
       const path = `${process.cwd()}/attachments/messages.txt`
-      const uMessage = WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path)
+      WickrIOAPI.cmdSendRoomAttachment(vGroupID, path, path)
       return
     }
 
@@ -174,7 +192,7 @@ async function listen(message) {
       wickrUser = new WickrUser(userEmail, {
         index: 0,
         vGroupID,
-        personal_vGroupID,
+        personalvGroupID,
         command: '',
         argument: '',
         confirm: '',
@@ -185,7 +203,7 @@ async function listen(message) {
     logger.debug('user:', user)
 
     const messageService = new MessageService(
-      messageReceived,
+      message,
       userEmail,
       argument,
       command,
@@ -214,16 +232,15 @@ async function listen(message) {
           parsedMessage.message,
           userEmail
         )
-        if (obj.reply) {
+        if (obj?.reply) {
           logger.debug('Object has a reply')
-          const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply)
         }
         currentState = obj.state
       } else {
         const reply =
           'Input not recognized please reply with (u)ser, (h)ash, or (s)end.'
-        const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply)
         currentState = State.FILE_TYPE
+        console.log('do something with reply', reply)
       }
       if (fileAppend) {
         logger.debug(`Here is file info${file}`)
@@ -232,13 +249,13 @@ async function listen(message) {
           `${process.cwd()}/files/${filename.toString()}${fileAppend}`
         )
         logger.debug(`Here is cp:${cp}`)
+        let reply
         if (cp) {
-          const reply = `File named: ${filename} successfully saved to directory.`
-          const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply)
+          reply = `File named: ${filename} successfully saved to directory.`
         } else {
-          const reply = `Error: File named: ${filename} not saved to directory.`
-          const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply)
+          reply = `Error: File named: ${filename} not saved to directory.`
         }
+        console.log('do something with reply,', reply)
       }
     } else {
       // TODO parse argument better??
@@ -251,47 +268,15 @@ async function listen(message) {
         // obj = factory.execute(currentState, command, argument, parsedMessage.message, userEmail);
         obj = factory.newExecute(messageService)
       }
-      if (obj.reply) {
+      if (obj?.reply) {
         logger.debug('Object has a reply')
-        const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, obj.reply)
       }
-      currentState = obj.state
+      currentState = obj?.state
     }
   } catch (err) {
     logger.error(err)
     logger.error('Got an error')
   }
-}
-
-function affirmativeReply(message) {
-  return message.toLowerCase() === 'yes' || message.toLowerCase() === 'y'
-}
-
-function negativeReply(message) {
-  return message.toLowerCase() === 'no' || message.toLowerCase() === 'n'
-}
-
-function replyWithButtons(message) {
-  const button1 = {
-    type: 'message',
-    text: 'Yes',
-    message: 'yes',
-  }
-  const button2 = {
-    type: 'message',
-    text: 'No',
-    message: 'no',
-  }
-  const buttons = [button1, button2]
-
-  const bMessage = WickrIOAPI.cmdSendNetworkMessage(
-    broadcastMsgToSend,
-    '',
-    '',
-    messageID,
-    flags,
-    buttons
-  )
 }
 
 main()

@@ -1,4 +1,4 @@
-import logger from '../helpers/logger'
+// import logger from '../helpers/logger'
 import State from '../state'
 import StatusService from '../status-service'
 
