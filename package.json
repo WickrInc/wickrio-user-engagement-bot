@@ -1,5 +1,6 @@
 {
   "name": "wickrio-user-engagement-bot",
+
   "version": "5.79.1",
   "description": "WickrIO User Engagement Bot",
   "main": "user-engagement-bot.js",
