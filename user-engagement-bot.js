@@ -262,9 +262,12 @@ function replyWithButtons(message) {
     text: 'No',
     message: 'no',
   };
-  const buttons = [button1, button2];
+  const meta = {
+    buttons: [button1, button2]
+  }
+  const metastring = JSON.stringify(meta)
 
-  const bMessage = WickrIOAPI.cmdSendNetworkMessage(broadcastMsgToSend, '', '', messageID, flags, buttons);
+  const bMessage = WickrIOAPI.cmdSendNetworkMessage(broadcastMsgToSend, '', '', messageID, flags, metastring);
 }
 
 main();
