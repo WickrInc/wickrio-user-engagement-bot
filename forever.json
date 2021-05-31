@@ -1,0 +1,10 @@
+{
+  "uid": "wickrio-user-engagement-bot",
+  "append": true,
+  "watch": false,
+  "script": "./user-engagement-bot.js",
+  "sourceDir": "",
+  "logFile": "",
+  "outFile": "",
+  "errFile": ""
+}
