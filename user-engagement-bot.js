@@ -150,7 +150,7 @@ async function listen(message) {
     }
 
     if (!parsedMessage.isAdmin) {
-      const reply = "Hey, this bot is just for announcements and can't respond to you personally. If you have a question, please get a hold of us a support@wickr.com or visit us a support.wickr.com. Thanks, Team Wickr";
+      const reply = "Hey, this bot is just for announcements and can't respond to you personally. If you have a question, please get a hold of us at wickr-support@amazon.com or visit us at support.wickr.com. Thanks, Team Wickr";
       const sMessage = WickrIOAPI.cmdSendRoomMessage(vGroupID, reply);
       logger.debug(sMessage);
       writer.writeFile(message);
