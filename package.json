@@ -1,6 +1,6 @@
 {
   "name": "wickrio-user-engagement-bot",
-  "version": "5.116.1",
+  "version": "6.26.1",
   "description": "WickrIO User Engagement Bot",
   "main": "user-engagement-bot.js",
   "author": "Toren DeRosa",
@@ -11,7 +11,7 @@
     "pino": "^5.15.0",
     "prompt": "^1.0.0",
     "dotenv": "^8.2.0",
-    "wickrio-bot-api": "5.113.x"
+    "wickrio-bot-api": "6.26.x"
   },
   "scripts": {
     "start": "forever start -m 5 ./forever.json",
